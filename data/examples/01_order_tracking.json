@@ -1,0 +1,1851 @@
+{
+  "title": "E-commerce order tracking",
+  "summary": "Customer self-service to cut call volume",
+  "input": {
+    "project_name": "Online Order Tracking",
+    "request": "We want customers to be able to track their orders online because our customer service team receives too many calls asking about order status.",
+    "industry": "E-commerce",
+    "stakeholders": "",
+    "existing_systems": "",
+    "constraints": ""
+  },
+  "analysis": {
+    "input": {
+      "project_name": "Online Order Tracking",
+      "request": "We want customers to be able to track their orders online because our customer service team receives too many calls asking about order status.",
+      "industry": "E-commerce",
+      "stakeholders": "",
+      "existing_systems": "",
+      "constraints": "",
+      "clarifications": []
+    },
+    "created_at": "2026-09-24T19:02:49.613276Z",
+    "model": "claude-sonnet-5",
+    "is_demo": false,
+    "questions": {
+      "questions": [
+        {
+          "id": "Q-01",
+          "question": "What is the source system of truth for order and shipment status data (e.g., order management system, warehouse system, carrier systems), and is it accessible via an API or other integration method?",
+          "category": "Critical",
+          "area": "Data",
+          "rationale": "Without knowing where order/shipment data lives and how it can be retrieved, the system cannot be designed to display accurate, current status information."
+        },
+        {
+          "id": "Q-02",
+          "question": "How will customers authenticate to view their order status (e.g., account login, order number plus email/zip code, guest lookup)?",
+          "category": "Critical",
+          "area": "Security",
+          "rationale": "The authentication model directly determines the security design and affects whether sensitive order data could be exposed to unauthorized users."
+        },
+        {
+          "id": "Q-03",
+          "question": "What are the specific order status stages that must be displayed to customers (e.g., placed, processing, shipped, out for delivery, delivered, cancelled, returned)?",
+          "category": "Critical",
+          "area": "Business Rules",
+          "rationale": "Without defined status stages, functional requirements for the tracking display cannot be written and status mapping from backend systems will be inconsistent."
+        },
+        {
+          "id": "Q-04",
+          "question": "Which channel(s) should this tracking capability support: web browser, mobile app, both, or also email/SMS notifications?",
+          "category": "Critical",
+          "area": "Scope",
+          "rationale": "Channel choice determines the scope of design, development effort, and technical platforms required."
+        },
+        {
+          "id": "Q-05",
+          "question": "Are there existing customer accounts or a customer portal, and should order tracking be integrated into it, or built as a standalone feature?",
+          "category": "Critical",
+          "area": "Integration",
+          "rationale": "This affects whether new authentication and account infrastructure must be built or whether the feature can leverage existing systems."
+        },
+        {
+          "id": "Q-06",
+          "question": "What should happen when order or tracking data is unavailable, delayed, or inconsistent between systems (e.g., carrier has no update yet)?",
+          "category": "Important",
+          "area": "Business Rules",
+          "rationale": "Error and exception handling rules need to be defined to avoid customer confusion and additional support calls if data is missing or contradictory."
+        },
+        {
+          "id": "Q-07",
+          "question": "Should the feature integrate with third-party shipping carriers to show real-time tracking details, or only display internal order status milestones?",
+          "category": "Important",
+          "area": "Integration",
+          "rationale": "This determines whether carrier API integrations are in scope, significantly affecting technical complexity and timeline."
+        },
+        {
+          "id": "Q-08",
+          "question": "How will success be measured (e.g., percentage reduction in status-related customer service calls, customer satisfaction scores, adoption rate of the tracking feature)?",
+          "category": "Important",
+          "area": "Success Metrics",
+          "rationale": "Without defined success metrics, it will be impossible to evaluate whether the solution achieved the business goal of reducing customer service call volume."
+        },
+        {
+          "id": "Q-09",
+          "question": "Are there specific regions, business units, or order types (e.g., international orders, subscriptions, B2B orders) that should be included or excluded from this feature?",
+          "category": "Important",
+          "area": "Scope",
+          "rationale": "Scope boundaries affect data integration complexity and which customer segments benefit, and omissions could leave major customer groups unserved."
+        },
+        {
+          "id": "Q-10",
+          "question": "What personal or order data will be displayed to the customer, and are there any privacy or data protection requirements (e.g., masking payment details, complying with data protection regulations) that apply?",
+          "category": "Important",
+          "area": "Compliance",
+          "rationale": "Displaying order data may expose personal or payment information, creating privacy and regulatory risk if not properly scoped."
+        },
+        {
+          "id": "Q-11",
+          "question": "Is there a target timeline or budget for delivering this feature, and are there existing technology platforms or vendors that must be used?",
+          "category": "Important",
+          "area": "Constraints",
+          "rationale": "Timeline and budget constraints shape prioritization and the feasibility of integration approaches such as real-time carrier tracking."
+        },
+        {
+          "id": "Q-12",
+          "question": "Who are the internal stakeholders (e.g., customer service management, IT, operations) who must approve requirements and sign off on the final solution?",
+          "category": "Important",
+          "area": "Users",
+          "rationale": "Identifying approvers ensures requirements are validated by the right people and reduces rework from late-stage stakeholder feedback."
+        },
+        {
+          "id": "Q-13",
+          "question": "Should customer service representatives have access to the same order tracking view to assist customers during calls, and if so, do they need additional detail not shown to customers?",
+          "category": "Nice to Know",
+          "area": "Users",
+          "rationale": ""
+        },
+        {
+          "id": "Q-14",
+          "question": "How frequently does order/shipment status data need to be refreshed or synced to be considered 'current' for customer-facing display (e.g., real-time, every few minutes, hourly)?",
+          "category": "Important",
+          "area": "Data",
+          "rationale": "Data freshness requirements affect the technical architecture, particularly whether real-time integration or periodic batch updates are needed."
+        },
+        {
+          "id": "Q-15",
+          "question": "Should customers be able to take actions from the tracking page, such as canceling an order, requesting a return, or contacting support directly, or is this a read-only status view?",
+          "category": "Nice to Know",
+          "area": "Scope",
+          "rationale": ""
+        }
+      ]
+    },
+    "problem": {
+      "problem_statement": "Customers currently have no self-service way to check the status of their orders, so they call customer service to ask, which increases call volume and support workload.",
+      "objectives": [
+        {
+          "id": "BO-01",
+          "description": "Reduce the volume of inbound customer service calls related to order status inquiries",
+          "success_measure": "",
+          "basis": "Inferred"
+        },
+        {
+          "id": "BO-02",
+          "description": "Enable customers to independently obtain order status information without contacting customer service",
+          "success_measure": "",
+          "basis": "Stated"
+        }
+      ],
+      "target_users": [
+        "Customers",
+        "Customer service team (indirectly, as beneficiaries of reduced call volume)"
+      ],
+      "current_state": "Customers must contact customer service by phone to find out the status of their orders, resulting in a high volume of status-related calls.",
+      "future_state": "Customers can view their order status online without needing to call customer service.",
+      "in_scope": [
+        "Providing customers a way to view order status online"
+      ],
+      "out_of_scope": [],
+      "ambiguities": [
+        "'Track their orders online' is not defined \\u2014 unclear if this means a web page, a customer account portal, email notifications, or a combination.",
+        "No definition of what order statuses should be shown (e.g., processing, shipped, delivered, delayed) or the level of detail required.",
+        "Unclear whether tracking requires customer authentication/login or can be done via order number/email lookup for guest customers.",
+        "Unclear whether this covers all order types (e.g., pre-orders, backorders, cancellations, returns) or only standard fulfillment.",
+        "No indication of which existing systems (order management, shipping/carrier systems, e-commerce platform) would supply the status data, so integration scope is unknown."
+      ],
+      "conflicts": [],
+      "is_too_vague": false,
+      "missing_information": [
+        "Which system(s) currently hold order and shipment status data",
+        "Whether customers need to log in to an account or can track via order number/email",
+        "What order statuses and details should be displayed to customers",
+        "Whether the solution should include notifications (email/SMS) in addition to a lookup page",
+        "Volume of calls or percentage attributable to order-status inquiries, to set a measurable target",
+        "Any existing e-commerce platform or customer service tools this must integrate with",
+        "Stakeholders beyond 'customers' and 'customer service team' who should be consulted (e.g., IT, operations, shipping partners)"
+      ]
+    },
+    "stakeholders": {
+      "stakeholders": [
+        {
+          "id": "SH-01",
+          "name": "Customers",
+          "type": "External",
+          "interest": "Wants to check order status online without needing to call customer service",
+          "influence": "Medium",
+          "impact": "High",
+          "basis": "Stated",
+          "potentially_missing": false
+        },
+        {
+          "id": "SH-02",
+          "name": "Customer Service Team",
+          "type": "Internal",
+          "interest": "Wants a reduction in inbound calls about order status so they can focus on other inquiries; may need visibility into what customers can see to handle escalations",
+          "influence": "Medium",
+          "impact": "High",
+          "basis": "Stated",
+          "potentially_missing": false
+        },
+        {
+          "id": "SH-03",
+          "name": "Customer Service Manager",
+          "type": "Internal",
+          "interest": "Wants measurable reduction in call volume and improved team efficiency; likely approves requirements related to service impact",
+          "influence": "High",
+          "impact": "Medium",
+          "basis": "Inferred",
+          "potentially_missing": false
+        },
+        {
+          "id": "SH-04",
+          "name": "Order Management / Fulfillment Team",
+          "type": "Internal",
+          "interest": "Owns the data on order processing and fulfillment status that would need to be exposed to customers",
+          "influence": "Medium",
+          "impact": "Medium",
+          "basis": "Inferred",
+          "potentially_missing": false
+        },
+        {
+          "id": "SH-05",
+          "name": "IT / Systems Owner (Order Management & E-commerce Platform)",
+          "type": "Internal",
+          "interest": "Needs to determine feasibility of exposing order status data, integration effort, and system impacts; no existing systems were specified so this is uncertain",
+          "influence": "High",
+          "impact": "High",
+          "basis": "Assumed",
+          "potentially_missing": true
+        },
+        {
+          "id": "SH-06",
+          "name": "Shipping / Logistics Carrier Partners",
+          "type": "External",
+          "interest": "May be a source of shipment tracking data if order status includes shipping updates",
+          "influence": "Low",
+          "impact": "Low",
+          "basis": "Assumed",
+          "potentially_missing": true
+        },
+        {
+          "id": "SH-07",
+          "name": "Product Owner / Business Sponsor",
+          "type": "Internal",
+          "interest": "Owns the business case and approves scope, priorities, and success criteria for the tracking feature",
+          "influence": "High",
+          "impact": "Medium",
+          "basis": "Assumed",
+          "potentially_missing": true
+        },
+        {
+          "id": "SH-08",
+          "name": "Security / Data Privacy Team",
+          "type": "Internal",
+          "interest": "Needs to ensure customer order data is accessed securely, especially if guest lookup via order number/email is allowed without login",
+          "influence": "Medium",
+          "impact": "Low",
+          "basis": "Assumed",
+          "potentially_missing": true
+        }
+      ]
+    },
+    "process": {
+      "sufficient_detail": false,
+      "current_state": [
+        {
+          "id": "CS-01",
+          "actor": "Customer",
+          "description": "Calls customer service to ask about order status",
+          "is_manual": true,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-02",
+          "actor": "Customer Service Representative",
+          "description": "Answers customer call",
+          "is_manual": true,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-03",
+          "actor": "Customer Service Representative",
+          "description": "Looks up order status in an order system",
+          "is_manual": false,
+          "is_bottleneck": true,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-04",
+          "actor": "Customer Service Representative",
+          "description": "Communicates order status to customer verbally",
+          "is_manual": true,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-05",
+          "actor": "Customer Service Representative",
+          "description": "Ends call",
+          "is_manual": true,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        }
+      ],
+      "future_state": [
+        {
+          "id": "FS-01",
+          "actor": "Customer",
+          "description": "Visits online order tracking page",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "FS-02",
+          "actor": "Order Tracking System",
+          "description": "Requests order identification from customer (e.g., order number or account login)",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "FS-03",
+          "actor": "Order Tracking System",
+          "description": "Retrieves order status from order management system",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "FS-04",
+          "actor": "Order Tracking System",
+          "description": "Displays order status to customer",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "FS-05",
+          "actor": "Customer",
+          "description": "Obtains order status without contacting customer service",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        }
+      ],
+      "bottlenecks": [
+        "CS-03: Manual lookup of order status by customer service reps during high call volumes likely causes hold times and queue backlogs for other callers."
+      ],
+      "manual_activities": [
+        "CS-01/CS-02: Customer must call and wait for a live agent to get order status.",
+        "CS-04: Customer service representative manually communicates status verbally after lookup, with no self-service alternative today."
+      ],
+      "inefficiencies": [
+        "Every status inquiry consumes live agent time (CS-02 through CS-04) even though the underlying data (CS-03) may already exist in a system, meaning repetitive, low-complexity queries compete with more complex customer service work.",
+        "Customers must interrupt their schedule and wait on hold simply to receive information that could be self-served."
+      ],
+      "automation_opportunities": [
+        "Replacing CS-01 through CS-04 with a self-service flow (FS-01 through FS-04) would let customers retrieve status instantly online, reducing inbound call volume and freeing customer service capacity for issues that require human judgment.",
+        "If order status data already exists in a backend system (as implied by CS-03), exposing it through a customer-facing interface (FS-03/FS-04) may require primarily integration work rather than new data capture."
+      ],
+      "notes": "The request provides only the high-level trigger for this initiative (customers call because they lack an online way to check order status) and does not describe how customer service currently performs the lookup. The current-state map above is a reasonable inference of a typical call-and-lookup flow, but it is unconfirmed: it is unknown what system(s) customer service reps actually use, whether a ticketing or CRM tool is involved, typical call/handling times, or call volumes attributable to status inquiries. The future-state map assumes a generic self-service lookup page with either an account login or order-number/email lookup (FS-02) and a connection to an order management system (FS-03); neither the authentication method nor the source system is stated and both are assumed pending stakeholder input. To complete and validate this process map, we need: (1) identification of the system(s) that hold order/shipment status data, (2) whether tracking will require customer login or guest lookup by order number/email, (3) which statuses and level of detail should be shown to customers, (4) whether notifications (email/SMS) are in scope in addition to a lookup page, (5) baseline call volume/percentage data to quantify the problem and set a measurable target, and (6) any existing e-commerce or customer service systems this must integrate with."
+    },
+    "risks": {
+      "risks": [
+        {
+          "id": "RK-01",
+          "description": "Order status in the source system lags behind actual fulfillment or shipping events, so customers see outdated status on the tracking page and still call customer service to confirm.",
+          "source": "Data",
+          "likelihood": "High",
+          "impact": "High",
+          "mitigation": "Establish a clear data refresh/sync frequency requirement with the source system owner and display a visible 'last updated' timestamp to set customer expectations."
+        },
+        {
+          "id": "RK-02",
+          "description": "No confirmed API or integration point exists between the order/shipment data source and a new customer-facing tracking feature, risking inability to retrieve accurate status data.",
+          "source": "Technical",
+          "likelihood": "Medium",
+          "impact": "High",
+          "mitigation": "Conduct a technical discovery spike with IT/Systems Architecture to confirm data access method and feasibility before committing to a delivery timeline."
+        },
+        {
+          "id": "RK-03",
+          "description": "Guest order lookup using order number plus email could be exploited to enumerate or access another customer's order details if authentication controls are weak.",
+          "source": "Compliance",
+          "likelihood": "Medium",
+          "impact": "High",
+          "mitigation": "Implement rate limiting, CAPTCHA, and strict field-matching validation on lookup, and conduct a security review before launch."
+        },
+        {
+          "id": "RK-04",
+          "description": "Customers may be unaware the tracking feature exists or may distrust it, continuing to call customer service anyway, undermining the goal of reducing call volume.",
+          "source": "Adoption",
+          "likelihood": "Medium",
+          "impact": "Medium",
+          "mitigation": "Promote the feature via order confirmation emails, website banners, and customer service call scripts that direct callers to the tool."
+        },
+        {
+          "id": "RK-05",
+          "description": "The root causes of status-related calls (e.g., delivery delays or fulfillment errors) may be unrelated to lack of visibility, so a tracking page alone may not significantly reduce call volume.",
+          "source": "Business",
+          "likelihood": "Medium",
+          "impact": "Medium",
+          "mitigation": "Analyze existing call reason data before build to confirm that lack of visibility (not the underlying delay) is the primary driver, and set realistic reduction targets."
+        },
+        {
+          "id": "RK-06",
+          "description": "Order status definitions or terminology may differ across systems (e.g., order management vs. shipping carrier), leading to inconsistent or confusing status labels shown to customers.",
+          "source": "Process",
+          "likelihood": "Medium",
+          "impact": "Medium",
+          "mitigation": "Define and document a standardized status taxonomy mapped from each source system before development begins."
+        },
+        {
+          "id": "RK-07",
+          "description": "Critical scope elements (authentication method, channels, status set, data sources) remain undefined, risking scope creep, rework, or delayed delivery if not clarified early.",
+          "source": "Project",
+          "likelihood": "High",
+          "impact": "Medium",
+          "mitigation": "Hold a requirements workshop with all relevant stakeholders to resolve open questions before design and build begin."
+        },
+        {
+          "id": "RK-08",
+          "description": "Multiple backend systems (order management, warehouse, carrier) may need to be synchronized to produce a single accurate status, risking incomplete or contradictory data feeding the customer-facing view.",
+          "source": "Technical",
+          "likelihood": "Medium",
+          "impact": "Medium",
+          "mitigation": "Design a single status-aggregation layer with documented precedence rules for resolving conflicting data from multiple sources."
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "AS-01",
+          "description": "Order and shipment status data resides in an existing order management or e-commerce platform system that is accessible via an API or other integration method.",
+          "impact_if_wrong": "If no accessible integration exists, the feature cannot be built as scoped and would require custom integration work, increasing cost and timeline.",
+          "validate_with": "IT/Systems Architect or Order Management System owner"
+        },
+        {
+          "id": "AS-02",
+          "description": "Customers will authenticate via order number plus email (or similar guest lookup) rather than requiring a full account login.",
+          "impact_if_wrong": "If account login is required instead, additional account management, security, and UX design work is needed; if guest lookup proves insufficient, stronger identity verification controls must be added.",
+          "validate_with": "Product Owner / Customer Service Lead"
+        },
+        {
+          "id": "AS-03",
+          "description": "The order status stages to display will be a standard set (e.g., placed, processing, shipped, delivered, cancelled) rather than granular carrier-level detail.",
+          "impact_if_wrong": "If more granular statuses (e.g., out for delivery, delayed, returned) are required, additional data mapping and sourcing effort will be needed.",
+          "validate_with": "Business/Product Owner, Operations"
+        },
+        {
+          "id": "AS-04",
+          "description": "The tracking capability will be delivered as a web-based page only, not a mobile app or email/SMS notification, at least initially.",
+          "impact_if_wrong": "Adding channels such as mobile app or notifications would increase scope, technical complexity, and cost.",
+          "validate_with": "Product Owner"
+        },
+        {
+          "id": "AS-05",
+          "description": "No existing customer account portal exists that this feature must integrate with; it will be built as a standalone order lookup feature.",
+          "impact_if_wrong": "If a portal exists, integration and consistency work with existing account and authentication systems will be required.",
+          "validate_with": "IT / Digital Platform Owner"
+        },
+        {
+          "id": "AS-06",
+          "description": "When order or tracking data is unavailable or delayed, the system will display a generic 'status pending' style message rather than an error or blank result.",
+          "impact_if_wrong": "Without an agreed fallback behavior, customers may see errors or unclear results, undermining trust and potentially increasing calls.",
+          "validate_with": "Product Owner, Customer Service Lead"
+        },
+        {
+          "id": "AS-07",
+          "description": "No real-time third-party carrier tracking integration is required at launch; only internal order status milestones will be shown.",
+          "impact_if_wrong": "Carrier API integration would be a significant technical addition requiring vendor coordination and data mapping.",
+          "validate_with": "Operations / Shipping Partner Manager"
+        },
+        {
+          "id": "AS-08",
+          "description": "Success will be measured primarily by a reduction in order-status-related customer service call volume.",
+          "impact_if_wrong": "If different success metrics are intended (e.g., customer satisfaction, adoption rate), different tracking and reporting mechanisms would be needed.",
+          "validate_with": "Customer Service Management / Project Sponsor"
+        },
+        {
+          "id": "AS-09",
+          "description": "The feature will apply uniformly to all order types and regions without exclusions (e.g., no special handling for international, B2B, or subscription orders).",
+          "impact_if_wrong": "Excluded or special order types may require separate handling, messaging, or exclusion logic, increasing scope.",
+          "validate_with": "Business/Product Owner"
+        },
+        {
+          "id": "AS-10",
+          "description": "Only non-sensitive order data (status, item summary, estimated delivery) will be displayed, with no payment or full personal details exposed, and standard data protection practices are sufficient.",
+          "impact_if_wrong": "Additional privacy, security, or regulatory compliance measures may be required, affecting design and timeline.",
+          "validate_with": "Compliance/Legal or Data Protection Officer"
+        },
+        {
+          "id": "AS-11",
+          "description": "No fixed budget, deadline, or mandated technology platform has been specified, and delivery will proceed using the organization's existing e-commerce technology stack.",
+          "impact_if_wrong": "A defined budget, timeline, or mandated platform would constrain solution design, phasing, and vendor choices.",
+          "validate_with": "Project Sponsor"
+        },
+        {
+          "id": "AS-12",
+          "description": "Customer Service Management and IT are the primary internal stakeholders responsible for requirements approval and sign-off.",
+          "impact_if_wrong": "Missing stakeholder input (e.g., Operations, Legal) could result in rework or requirements that lack proper approval.",
+          "validate_with": "Project Sponsor"
+        },
+        {
+          "id": "AS-13",
+          "description": "Order and shipment status data does not need to be real-time; periodic synchronization (e.g., near-hourly) is acceptable for customer-facing display.",
+          "impact_if_wrong": "If customers expect real-time accuracy, more frequent or event-driven syncing would be needed, increasing technical complexity.",
+          "validate_with": "IT/Systems Architect, Product Owner"
+        }
+      ],
+      "constraints": [
+        {
+          "id": "CN-01",
+          "description": "The solution must rely on data from existing order management and/or shipping systems, since no new order-processing or shipment system is indicated as being built for this project.",
+          "type": "Technical",
+          "basis": "Inferred"
+        },
+        {
+          "id": "CN-02",
+          "description": "The tracking capability must be delivered through an online channel, as explicitly requested, rather than through phone-based customer service interaction.",
+          "type": "Business",
+          "basis": "Stated"
+        },
+        {
+          "id": "CN-03",
+          "description": "The feature must relate to orders originating from the organization's existing e-commerce order placement process, since tracking is for orders already placed by customers.",
+          "type": "Business",
+          "basis": "Inferred"
+        }
+      ],
+      "edge_cases": [
+        "An order has been placed but no shipment or tracking record exists yet (e.g., still in processing), so the tracking page must show an appropriate 'not yet shipped' state rather than an error.",
+        "Order data exists in one system (e.g., order management) but is missing or delayed in another (e.g., shipping/carrier system), producing inconsistent or incomplete status.",
+        "An order is cancelled or returned after having been marked shipped, and the displayed status must correctly reflect the final/terminal state.",
+        "An order is partially shipped, with some items dispatched separately and having different statuses or delivery timelines than others.",
+        "A customer enters a valid order number with an incorrect or mismatched secondary identifier (e.g., email), and the system must reject the lookup without revealing whether the order exists.",
+        "A customer attempts to look up an order number that does not exist or belongs to a different customer, requiring safe error handling that does not leak information.",
+        "Order or shipment status has not been updated by the source system for an extended period, resulting in a stale status being shown without any indication of the delay.",
+        "A customer has placed multiple orders and needs a way to distinguish and track each one individually through the lookup interface."
+      ]
+    },
+    "requirements": {
+      "functional": [
+        {
+          "id": "FR-001",
+          "description": "The system shall allow a customer to submit an order number together with a matching secondary identifier (such as email address) to initiate an order status lookup.",
+          "priority": "Must Have",
+          "rationale": "Enables self-service access to order status without requiring a full account login, addressing the core business need for customers to check status independently.",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-002",
+          "description": "The system shall validate that the submitted order number and secondary identifier match a single existing order before returning any status information.",
+          "priority": "Must Have",
+          "rationale": "Prevents unauthorized access to another customer's order data and protects against enumeration of valid order numbers.",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-003",
+          "description": "The system shall retrieve the current order status from the order management system for a validated lookup request.",
+          "priority": "Must Have",
+          "rationale": "The tracking feature depends on accessing existing order data rather than capturing new data.",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-004",
+          "description": "The system shall display the current order status to the customer following a successful lookup.",
+          "priority": "Must Have",
+          "rationale": "This is the primary self-service capability requested to reduce customer service calls.",
+          "objective_ids": [
+            "BO-01",
+            "BO-02"
+          ],
+          "basis": "Stated"
+        },
+        {
+          "id": "FR-005",
+          "description": "The system shall reject a lookup request where the order number and secondary identifier do not match, without indicating whether the order number itself exists.",
+          "priority": "Must Have",
+          "rationale": "Prevents information leakage that could allow an attacker to confirm valid order numbers.",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-006",
+          "description": "The system shall display an appropriate 'not yet shipped' or equivalent in-process message when an order exists but no shipment record is yet available.",
+          "priority": "Must Have",
+          "rationale": "Avoids presenting an error or blank result for a common, valid order state, which could otherwise drive a call to customer service.",
+          "objective_ids": [
+            "BO-01",
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-007",
+          "description": "The system shall display a fallback message indicating status is pending when order or shipment data is unavailable or delayed from the source system.",
+          "priority": "Must Have",
+          "rationale": "Ensures customers receive a clear, trustworthy response rather than an error, reducing the likelihood they will call for clarification.",
+          "objective_ids": [
+            "BO-01",
+            "BO-02"
+          ],
+          "basis": "Assumed"
+        },
+        {
+          "id": "FR-008",
+          "description": "The system shall correctly display a cancelled or returned status as the final state for an order, even if the order was previously marked as shipped.",
+          "priority": "Should Have",
+          "rationale": "Customers need an accurate terminal status to avoid confusion and repeat inquiries about an order that will not proceed further.",
+          "objective_ids": [
+            "BO-01",
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-009",
+          "description": "The system shall display separate status information for each item or shipment when an order has been partially shipped.",
+          "priority": "Should Have",
+          "rationale": "Without this, customers with split shipments may see incomplete or misleading status and still call for clarification.",
+          "objective_ids": [
+            "BO-01",
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-010",
+          "description": "The system shall display the date and time the shown order status was last updated.",
+          "priority": "Should Have",
+          "rationale": "Sets customer expectations about data currency and reduces distrust or repeat calls caused by perceived stale information.",
+          "objective_ids": [
+            "BO-01"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-011",
+          "description": "The system shall validate that required lookup fields are provided and correctly formatted before attempting to process a status request.",
+          "priority": "Must Have",
+          "rationale": "Basic input validation is necessary for correct, testable system behavior and to provide clear feedback to customers.",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-012",
+          "description": "The system shall limit the rate of lookup attempts from a single source to reduce the risk of automated enumeration of order data.",
+          "priority": "Should Have",
+          "rationale": "Mitigates the risk that guest lookup could be exploited to access other customers' order information.",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Assumed"
+        },
+        {
+          "id": "FR-013",
+          "description": "The system shall allow a customer to look up each of their orders individually when they hold more than one order.",
+          "priority": "Should Have",
+          "rationale": "Customers with multiple orders need to distinguish and track each one separately to get accurate information for the specific order they are asking about.",
+          "objective_ids": [
+            "BO-01",
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-014",
+          "description": "The system shall send email or SMS notifications of order status changes to customers.",
+          "priority": "Won't Have",
+          "rationale": "Recorded as an explicit scope boundary; the request and available information support a lookup capability only, not proactive notifications, pending stakeholder confirmation.",
+          "objective_ids": [],
+          "basis": "Assumed"
+        },
+        {
+          "id": "FR-015",
+          "description": "The system shall provide a dedicated mobile application for order tracking.",
+          "priority": "Won't Have",
+          "rationale": "Recorded as an explicit scope boundary; no mobile app was requested or implied, and a web-based lookup is assumed sufficient for this release.",
+          "objective_ids": [],
+          "basis": "Assumed"
+        }
+      ],
+      "non_functional": [
+        {
+          "id": "NFR-001",
+          "category": "Security",
+          "description": "The system shall protect the guest order lookup process against unauthorized access attempts, including safeguards against enumeration of order numbers and identifier guessing.",
+          "priority": "Must Have",
+          "rationale": "Guest lookup without full account authentication introduces a risk of unauthorized access to other customers' order details if not properly controlled.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "NFR-002",
+          "category": "Data Privacy",
+          "description": "The system shall display only non-sensitive order information (such as status, item summary, and estimated delivery) and shall not expose payment details or full personal information through the tracking interface.",
+          "priority": "Must Have",
+          "rationale": "Limiting displayed data reduces privacy risk in a feature accessible without full account login.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Assumed"
+        },
+        {
+          "id": "NFR-003",
+          "category": "Performance",
+          "description": "The system shall return order status results within a response time that stakeholders agree is acceptable for a self-service lookup experience.",
+          "priority": "Should Have",
+          "rationale": "Slow responses would undermine the goal of providing a faster alternative to calling customer service; a specific target has not been provided and must be agreed with stakeholders.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-01",
+            "BO-02"
+          ],
+          "basis": "Assumed"
+        },
+        {
+          "id": "NFR-004",
+          "category": "Availability",
+          "description": "The order tracking feature shall be available for customer use consistent with the online store's expected operating hours and demand patterns.",
+          "priority": "Should Have",
+          "rationale": "If the tracking page is frequently unavailable, customers will revert to calling customer service, undermining the call-reduction objective.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-01"
+          ],
+          "basis": "Assumed"
+        },
+        {
+          "id": "NFR-005",
+          "category": "Accessibility",
+          "description": "The order tracking page shall be usable by customers using assistive technologies and shall follow recognized accessibility practices appropriate for a public-facing e-commerce interface.",
+          "priority": "Should Have",
+          "rationale": "As a customer-facing feature open to the general public, accessibility affects who can successfully self-serve rather than call in.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "NFR-006",
+          "category": "Usability",
+          "description": "The system shall present order status information using clear, consistent, and easily understood terminology across all order and shipment states.",
+          "priority": "Should Have",
+          "rationale": "Inconsistent or confusing status labels across source systems could cause customers to misunderstand their order state and call for clarification anyway.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-01",
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "NFR-007",
+          "category": "Reliability",
+          "description": "The system shall present order status consistently when data is drawn from multiple source systems, resolving any conflicting information according to an agreed precedence rule.",
+          "priority": "Should Have",
+          "rationale": "Multiple backend systems may hold overlapping or conflicting status data, and inconsistent results would undermine customer trust in the feature.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-01",
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        }
+      ]
+    },
+    "stories": {
+      "stories": [
+        {
+          "id": "US-001",
+          "role": "customer",
+          "want": "enter my order number and email address to view my current order status",
+          "so_that": "I can get an update on my order without having to call customer service",
+          "priority": "Must Have",
+          "business_value": "Enables core self-service status checking, directly addressing the objective of reducing inbound customer service calls.",
+          "requirement_ids": [
+            "FR-001",
+            "FR-003",
+            "FR-004",
+            "FR-011"
+          ]
+        },
+        {
+          "id": "US-002",
+          "role": "customer",
+          "want": "have my lookup request rejected without any indication of whether the order number exists when my order number and email do not match",
+          "so_that": "my order information stays protected from someone else trying to access it",
+          "priority": "Must Have",
+          "business_value": "Protects customer data from unauthorized access and enumeration, supporting trust in the guest lookup channel.",
+          "requirement_ids": [
+            "FR-002",
+            "FR-005"
+          ]
+        },
+        {
+          "id": "US-003",
+          "role": "customer",
+          "want": "see a clear message that my order has not yet shipped when that is the case",
+          "so_that": "I understand my order is still in process instead of assuming something has gone wrong",
+          "priority": "Must Have",
+          "business_value": "Prevents avoidable support calls caused by ambiguous results for a common, valid order state.",
+          "requirement_ids": [
+            "FR-006"
+          ]
+        },
+        {
+          "id": "US-004",
+          "role": "customer",
+          "want": "see a message indicating my status is pending when order or shipment data is temporarily unavailable",
+          "so_that": "I know my request is being processed rather than thinking the system has failed",
+          "priority": "Must Have",
+          "business_value": "Maintains customer confidence in the tracking feature and avoids calls triggered by unclear error states.",
+          "requirement_ids": [
+            "FR-007"
+          ]
+        },
+        {
+          "id": "US-005",
+          "role": "customer",
+          "want": "see the correct cancelled or returned status as the final state of my order even if it was previously shown as shipped",
+          "so_that": "I have accurate information and don't mistakenly expect further delivery",
+          "priority": "Should Have",
+          "business_value": "Reduces repeat inquiries caused by outdated or contradictory status information after cancellation.",
+          "requirement_ids": [
+            "FR-008"
+          ]
+        },
+        {
+          "id": "US-006",
+          "role": "customer",
+          "want": "see separate status details for each item or shipment when my order has been split into multiple shipments",
+          "so_that": "I can accurately track every part of my order",
+          "priority": "Should Have",
+          "business_value": "Avoids misleading partial-order status that would otherwise still drive a call to customer service.",
+          "requirement_ids": [
+            "FR-009"
+          ]
+        },
+        {
+          "id": "US-007",
+          "role": "customer",
+          "want": "see when my order status was last updated",
+          "so_that": "I can judge how current the information is before deciding whether to contact anyone",
+          "priority": "Should Have",
+          "business_value": "Builds trust in the accuracy of self-service data, reinforcing the call-reduction goal.",
+          "requirement_ids": [
+            "FR-010"
+          ]
+        },
+        {
+          "id": "US-008",
+          "role": "security / data privacy team",
+          "want": "the system to limit the rate of lookup attempts from a single source",
+          "so_that": "customer order data is protected against automated enumeration attacks through the guest lookup feature",
+          "priority": "Should Have",
+          "business_value": "Reduces the risk of unauthorized data exposure through the self-service channel, protecting customer trust.",
+          "requirement_ids": [
+            "FR-012"
+          ]
+        },
+        {
+          "id": "US-009",
+          "role": "customer",
+          "want": "look up each of my orders individually when I have placed more than one order",
+          "so_that": "I get accurate status for the specific order I'm asking about rather than a mixed or unclear result",
+          "priority": "Should Have",
+          "business_value": "Ensures customers with multiple orders can fully self-serve, maximizing the reduction in inbound support calls.",
+          "requirement_ids": [
+            "FR-013"
+          ]
+        }
+      ]
+    },
+    "use_cases": {
+      "use_cases": [
+        {
+          "id": "UC-01",
+          "name": "Track Order Status via Guest Lookup",
+          "primary_actor": "Customer",
+          "goal": "Obtain the current status of a single order without contacting customer service or logging into an account",
+          "preconditions": [
+            "Customer has an order number and the matching secondary identifier (e.g., email address) used when the order was placed.",
+            "The order tracking page is accessible to the customer."
+          ],
+          "main_flow": [
+            "Customer navigates to the online order tracking page.",
+            "System prompts the customer to enter an order number and a matching secondary identifier.",
+            "Customer submits the order number and secondary identifier.",
+            "System validates that the required fields are present and correctly formatted.",
+            "System validates that the order number and secondary identifier match a single existing order.",
+            "System retrieves the current order status from the order management system.",
+            "System displays the order status, along with the date and time the status was last updated.",
+            "Customer reviews the status and ends the session without contacting customer service."
+          ],
+          "alternative_flows": [
+            {
+              "name": "6a. Order exists but has not yet shipped",
+              "steps": [
+                "System determines that the order exists but no shipment record is available.",
+                "System displays an in-process message indicating the order has not yet shipped, along with the last updated date and time.",
+                "Customer reviews the in-process status."
+              ]
+            },
+            {
+              "name": "6b. Order status is cancelled or returned",
+              "steps": [
+                "System determines the order's final recorded state is cancelled or returned.",
+                "System displays the cancelled or returned status as the current, final status, overriding any earlier shipped status.",
+                "Customer reviews the terminal status."
+              ]
+            }
+          ],
+          "exceptions": [
+            {
+              "name": "4a. Required fields missing or incorrectly formatted",
+              "steps": [
+                "System detects that a required field is missing or not in the expected format.",
+                "System displays a validation error describing the problem.",
+                "Customer corrects the input and resubmits, or abandons the lookup."
+              ]
+            },
+            {
+              "name": "5a. Order number and secondary identifier do not match",
+              "steps": [
+                "System finds no single order matching both the order number and secondary identifier.",
+                "System displays a generic rejection message without confirming or denying whether the order number itself exists.",
+                "Customer may retry with corrected information or contact customer service."
+              ]
+            },
+            {
+              "name": "5b. Lookup attempts exceed the allowed rate from the same source",
+              "steps": [
+                "System detects that the number of lookup attempts from the source has exceeded the permitted rate.",
+                "System declines to process further attempts and displays a message asking the customer to try again later.",
+                "Use case ends without a status result."
+              ]
+            },
+            {
+              "name": "6a. Order or shipment data unavailable from source system",
+              "steps": [
+                "System is unable to retrieve current order or shipment data from the order management system.",
+                "System displays a fallback message indicating that status is pending and encourages the customer to check again later.",
+                "Use case ends without a definitive status result."
+              ]
+            }
+          ],
+          "postconditions": [
+            "The customer has viewed the current status of the specified order, or has received a clear message explaining why status could not be shown, without needing to contact customer service."
+          ],
+          "requirement_ids": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-006",
+            "FR-007",
+            "FR-008",
+            "FR-010",
+            "FR-011",
+            "FR-012"
+          ]
+        },
+        {
+          "id": "UC-02",
+          "name": "Look Up Status of Multiple Orders Individually",
+          "primary_actor": "Customer",
+          "goal": "Check the current status of each of several orders placed separately, one at a time",
+          "preconditions": [
+            "Customer holds more than one order.",
+            "Customer has the order number and matching secondary identifier for each order they wish to check."
+          ],
+          "main_flow": [
+            "Customer navigates to the online order tracking page.",
+            "System prompts the customer to enter an order number and matching secondary identifier.",
+            "Customer submits the details for the first order.",
+            "System validates and retrieves the status for that order and displays it, including the last updated date and time.",
+            "Customer returns to the tracking page to check a different order.",
+            "System prompts the customer again for an order number and matching secondary identifier.",
+            "Customer submits the details for the second order.",
+            "System validates and retrieves the status for that order and displays it, distinct from the previous result."
+          ],
+          "alternative_flows": [
+            {
+              "name": "4a. Customer checks additional orders in sequence",
+              "steps": [
+                "Customer repeats the lookup steps for each additional order held.",
+                "System processes and displays the status for each order independently, with no data carried over between lookups."
+              ]
+            }
+          ],
+          "exceptions": [
+            {
+              "name": "4a. One of the orders fails validation or matching",
+              "steps": [
+                "System is unable to validate or match the submitted order number and secondary identifier for one of the orders.",
+                "System displays the appropriate rejection or validation message for that specific attempt.",
+                "Customer may retry that order or continue checking other orders."
+              ]
+            }
+          ],
+          "postconditions": [
+            "The customer has obtained separate, accurate status information for each order checked, with no order's data confused with another's."
+          ],
+          "requirement_ids": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-011",
+            "FR-013"
+          ]
+        },
+        {
+          "id": "UC-03",
+          "name": "View Status of a Partially Shipped Order",
+          "primary_actor": "Customer",
+          "goal": "Understand the shipment status of each item or shipment within a single order that has shipped in multiple parts",
+          "preconditions": [
+            "Customer has successfully validated a lookup for an order that has been split into more than one shipment."
+          ],
+          "main_flow": [
+            "Customer submits a valid order number and matching secondary identifier for an order with multiple shipments.",
+            "System retrieves order and shipment data from the order management system.",
+            "System identifies that the order has been partially shipped across more than one shipment or item group.",
+            "System displays separate status information for each item or shipment within the order.",
+            "System displays the date and time each shown status was last updated.",
+            "Customer reviews the individual statuses to understand which parts of the order have shipped and which remain pending."
+          ],
+          "alternative_flows": [
+            {
+              "name": "3a. All items later consolidate into a single shipment status",
+              "steps": [
+                "System detects that previously separate shipments have since been consolidated or completed under one status.",
+                "System displays a single consolidated status instead of multiple item-level statuses.",
+                "Customer reviews the consolidated status."
+              ]
+            }
+          ],
+          "exceptions": [
+            {
+              "name": "2a. Shipment-level data is unavailable for one or more items",
+              "steps": [
+                "System is unable to retrieve shipment detail for one or more items in the order.",
+                "System displays a fallback pending message for the affected item or shipment while still showing available status for the rest.",
+                "Customer reviews the mixed result."
+              ]
+            }
+          ],
+          "postconditions": [
+            "The customer has a clear, itemized understanding of the shipment status for each part of a split order."
+          ],
+          "requirement_ids": [
+            "FR-003",
+            "FR-004",
+            "FR-007",
+            "FR-009",
+            "FR-010"
+          ]
+        }
+      ]
+    },
+    "criteria": {
+      "criteria": [
+        {
+          "id": "AC-001",
+          "story_id": "US-001",
+          "title": "Successful order status lookup",
+          "scenario_type": "Positive",
+          "given": "a customer has a valid order number and the matching email address for that order",
+          "when": "the customer submits both values on the order tracking page",
+          "then": "the system displays the current status of that order to the customer"
+        },
+        {
+          "id": "AC-002",
+          "story_id": "US-001",
+          "title": "Missing required lookup field",
+          "scenario_type": "Negative",
+          "given": "a customer is on the order tracking page",
+          "when": "the customer submits the lookup form with the order number or email field left blank",
+          "then": "the system does not perform a lookup and displays a message indicating the required information is missing"
+        },
+        {
+          "id": "AC-003",
+          "story_id": "US-001",
+          "title": "Incorrectly formatted input",
+          "scenario_type": "Negative",
+          "given": "a customer is on the order tracking page",
+          "when": "the customer enters an order number or email address that does not match the expected format",
+          "then": "the system does not attempt the lookup and displays a message indicating the input format is invalid"
+        },
+        {
+          "id": "AC-004",
+          "story_id": "US-002",
+          "title": "Mismatched order number and email rejected generically",
+          "scenario_type": "Positive",
+          "given": "a customer submits an order number that exists together with an email address that does not match that order",
+          "when": "the lookup request is processed",
+          "then": "the system rejects the request and displays a generic message that does not reveal whether the order number exists"
+        },
+        {
+          "id": "AC-005",
+          "story_id": "US-002",
+          "title": "Lookup for non-existent order number",
+          "scenario_type": "Negative",
+          "given": "a customer submits an order number that does not exist in the system along with an email address",
+          "when": "the lookup request is processed",
+          "then": "the system rejects the request and displays the same generic message used for a mismatched but existing order"
+        },
+        {
+          "id": "AC-006",
+          "story_id": "US-002",
+          "title": "Wrong order number versus wrong email produce identical response",
+          "scenario_type": "Edge Case",
+          "given": "two separate lookup attempts are made, one with a correct order number and incorrect email, and one with an incorrect order number and correct email",
+          "when": "each request is processed by the system",
+          "then": "both attempts result in the same generic rejection message with no distinguishable difference in wording or behavior"
+        },
+        {
+          "id": "AC-007",
+          "story_id": "US-003",
+          "title": "Order not yet shipped",
+          "scenario_type": "Positive",
+          "given": "a customer has a valid order that has been placed but for which no shipment record yet exists",
+          "when": "the customer successfully looks up the order status",
+          "then": "the system displays a clear message stating the order has not yet shipped"
+        },
+        {
+          "id": "AC-008",
+          "story_id": "US-003",
+          "title": "Newly placed order with no shipment activity",
+          "scenario_type": "Edge Case",
+          "given": "an order was placed very recently and no shipment processing has started",
+          "when": "the customer looks up the order status",
+          "then": "the system displays the not-yet-shipped message rather than an error or blank result"
+        },
+        {
+          "id": "AC-009",
+          "story_id": "US-004",
+          "title": "Shipment data temporarily unavailable",
+          "scenario_type": "Positive",
+          "given": "a customer's order exists but shipment status data is temporarily unavailable from the source system",
+          "when": "the customer looks up the order status",
+          "then": "the system displays a message indicating the status is pending rather than an error"
+        },
+        {
+          "id": "AC-010",
+          "story_id": "US-004",
+          "title": "Order data present but shipment data missing entirely",
+          "scenario_type": "Edge Case",
+          "given": "an order record exists in the order management data but no corresponding shipment data can be retrieved at the time of the request",
+          "when": "the customer looks up the order status",
+          "then": "the system displays the pending status message instead of failing the request"
+        },
+        {
+          "id": "AC-011",
+          "story_id": "US-005",
+          "title": "Cancelled order overrides previously shipped status",
+          "scenario_type": "Positive",
+          "given": "an order was previously shown with a shipped status and has since been cancelled",
+          "when": "the customer looks up the order status",
+          "then": "the system displays the cancelled status as the final state of the order"
+        },
+        {
+          "id": "AC-012",
+          "story_id": "US-005",
+          "title": "Returned order overrides previously shipped status",
+          "scenario_type": "Positive",
+          "given": "an order was previously shown with a shipped status and has since been returned",
+          "when": "the customer looks up the order status",
+          "then": "the system displays the returned status as the final state of the order"
+        },
+        {
+          "id": "AC-013",
+          "story_id": "US-005",
+          "title": "Conflicting source data resolved to terminal status",
+          "scenario_type": "Edge Case",
+          "given": "one source system still records the order as shipped while another records it as cancelled or returned",
+          "when": "the customer looks up the order status",
+          "then": "the system displays the cancelled or returned status rather than the outdated shipped status"
+        },
+        {
+          "id": "AC-014",
+          "story_id": "US-006",
+          "title": "Split shipment shows individual statuses",
+          "scenario_type": "Positive",
+          "given": "a customer's order has been divided into multiple shipments with different items",
+          "when": "the customer looks up the order status",
+          "then": "the system displays separate status details for each item or shipment within that order"
+        },
+        {
+          "id": "AC-015",
+          "story_id": "US-006",
+          "title": "Shipments in different delivery states",
+          "scenario_type": "Edge Case",
+          "given": "an order has one shipment already delivered and another shipment still in transit",
+          "when": "the customer looks up the order status",
+          "then": "the system displays the distinct correct status for each shipment without merging them into a single misleading status"
+        },
+        {
+          "id": "AC-016",
+          "story_id": "US-007",
+          "title": "Last updated timestamp shown with status",
+          "scenario_type": "Positive",
+          "given": "a customer successfully retrieves an order status",
+          "when": "the status is displayed on the tracking page",
+          "then": "the system also displays the date and time the status was last updated"
+        },
+        {
+          "id": "AC-017",
+          "story_id": "US-007",
+          "title": "Timestamp shown for stale status",
+          "scenario_type": "Edge Case",
+          "given": "an order's status has not changed for an extended period",
+          "when": "the customer looks up the order status",
+          "then": "the system displays the last updated date and time reflecting how long ago the status was recorded, without misrepresenting it as current"
+        },
+        {
+          "id": "AC-018",
+          "story_id": "US-008",
+          "title": "Normal lookup usage proceeds unrestricted",
+          "scenario_type": "Positive",
+          "given": "a customer submits a small number of lookup attempts from the same source within a short period",
+          "when": "the requests are processed",
+          "then": "the system processes each request normally without applying any restriction"
+        },
+        {
+          "id": "AC-019",
+          "story_id": "US-008",
+          "title": "Excessive lookup attempts rate limited",
+          "scenario_type": "Negative",
+          "given": "a source has submitted an unusually high number of lookup attempts in a short period",
+          "when": "an additional lookup request is submitted from that same source",
+          "then": "the system blocks or restricts the request and does not return order status information"
+        },
+        {
+          "id": "AC-020",
+          "story_id": "US-008",
+          "title": "Legitimate customer repeatedly mistypes details",
+          "scenario_type": "Edge Case",
+          "given": "a customer has made several failed lookup attempts due to mistyped order number or email",
+          "when": "the customer continues submitting attempts from the same source",
+          "then": "the system may apply the same rate limiting response regardless of the customer's legitimate intent, and returns a generic message"
+        },
+        {
+          "id": "AC-021",
+          "story_id": "US-009",
+          "title": "Lookup returns status for the specific order requested",
+          "scenario_type": "Positive",
+          "given": "a customer has placed more than one order and provides one specific order number with the matching email",
+          "when": "the customer submits the lookup request",
+          "then": "the system displays the status for only that specific order and no other orders belonging to the customer"
+        },
+        {
+          "id": "AC-022",
+          "story_id": "US-009",
+          "title": "Separate lookups for multiple orders return distinct results",
+          "scenario_type": "Edge Case",
+          "given": "a customer has two different orders under the same email address",
+          "when": "the customer looks up each order individually using its own order number",
+          "then": "the system returns the correct distinct status for each order without mixing details between them"
+        }
+      ]
+    },
+    "test_cases": {
+      "test_cases": [
+        {
+          "id": "TC-001",
+          "requirement_ids": [
+            "FR-001",
+            "FR-003",
+            "FR-004",
+            "FR-011"
+          ],
+          "criterion_ids": [
+            "AC-001"
+          ],
+          "scenario": "Successful order status lookup with valid order number and matching email",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order ORD-1001 exists with status 'Shipped' for email customer1@example.com"
+          ],
+          "steps": [
+            "Navigate to the order tracking page",
+            "Enter order number ORD-1001",
+            "Enter email customer1@example.com",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays the current status 'Shipped' for order ORD-1001",
+          "priority": "High"
+        },
+        {
+          "id": "TC-002",
+          "requirement_ids": [
+            "FR-011"
+          ],
+          "criterion_ids": [
+            "AC-002"
+          ],
+          "scenario": "Lookup rejected when a required field is left blank",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "Customer is on the order tracking page"
+          ],
+          "steps": [
+            "Leave the order number field blank",
+            "Enter a valid email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system does not perform a lookup and displays a message indicating required information is missing",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-003",
+          "requirement_ids": [
+            "FR-011"
+          ],
+          "criterion_ids": [
+            "AC-003"
+          ],
+          "scenario": "Lookup rejected when input format is invalid",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "Customer is on the order tracking page"
+          ],
+          "steps": [
+            "Enter an order number in an invalid format, e.g. 'abc!!'",
+            "Enter an invalid email address, e.g. 'not-an-email'",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system does not attempt the lookup and displays a message indicating the input format is invalid",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-004",
+          "requirement_ids": [
+            "FR-002",
+            "FR-005"
+          ],
+          "criterion_ids": [
+            "AC-004"
+          ],
+          "scenario": "Rejection of a valid order number paired with a non-matching email",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "Order ORD-2002 exists and is registered to email customerA@example.com"
+          ],
+          "steps": [
+            "Enter order number ORD-2002",
+            "Enter email customerB@example.com (does not match the order)",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system rejects the request with a generic message that does not reveal whether the order number exists or is valid",
+          "priority": "High"
+        },
+        {
+          "id": "TC-005",
+          "requirement_ids": [
+            "FR-002",
+            "FR-005"
+          ],
+          "criterion_ids": [
+            "AC-005"
+          ],
+          "scenario": "Lookup attempt using an order number that does not exist",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "Order number ORD-9999 does not exist in the system"
+          ],
+          "steps": [
+            "Enter order number ORD-9999",
+            "Enter any well-formed email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system rejects the request and displays the same generic message used for a mismatched but existing order",
+          "priority": "High"
+        },
+        {
+          "id": "TC-006",
+          "requirement_ids": [
+            "FR-002",
+            "FR-005",
+            "NFR-001"
+          ],
+          "criterion_ids": [
+            "AC-006"
+          ],
+          "scenario": "Wrong order number and wrong email produce indistinguishable rejection responses",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Order ORD-3003 exists and is registered to email customerC@example.com"
+          ],
+          "steps": [
+            "Attempt 1: submit correct order number ORD-3003 with an incorrect email address and record the response",
+            "Attempt 2: submit an incorrect order number with the correct email customerC@example.com and record the response",
+            "Compare the two recorded responses"
+          ],
+          "expected_result": "Both attempts return the same generic rejection message with no distinguishable difference in wording, timing, or behavior",
+          "priority": "High"
+        },
+        {
+          "id": "TC-007",
+          "requirement_ids": [
+            "FR-006"
+          ],
+          "criterion_ids": [
+            "AC-007"
+          ],
+          "scenario": "Order exists but has not yet shipped",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order ORD-4004 exists with status 'Placed' and no shipment record"
+          ],
+          "steps": [
+            "Enter order number ORD-4004",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays a clear message stating the order has not yet shipped",
+          "priority": "High"
+        },
+        {
+          "id": "TC-008",
+          "requirement_ids": [
+            "FR-006"
+          ],
+          "criterion_ids": [
+            "AC-008"
+          ],
+          "scenario": "Newly placed order with no shipment activity yet",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Order ORD-4005 was placed a few minutes ago with no shipment processing started"
+          ],
+          "steps": [
+            "Enter order number ORD-4005",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays the not-yet-shipped message rather than an error or blank result",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-009",
+          "requirement_ids": [
+            "FR-007"
+          ],
+          "criterion_ids": [
+            "AC-009"
+          ],
+          "scenario": "Shipment data temporarily unavailable from source system",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order ORD-5005 exists; shipment status data source is simulated as temporarily unavailable"
+          ],
+          "steps": [
+            "Enter order number ORD-5005",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays a 'status pending' message instead of an error",
+          "priority": "High"
+        },
+        {
+          "id": "TC-010",
+          "requirement_ids": [
+            "FR-007"
+          ],
+          "criterion_ids": [
+            "AC-010"
+          ],
+          "scenario": "Order record exists but no corresponding shipment data can be retrieved",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Order ORD-5006 exists in order management data with no retrievable shipment data"
+          ],
+          "steps": [
+            "Enter order number ORD-5006",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays the pending status message instead of failing the request",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-011",
+          "requirement_ids": [
+            "FR-008"
+          ],
+          "criterion_ids": [
+            "AC-011"
+          ],
+          "scenario": "Cancelled status overrides a previously shown shipped status",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order ORD-6006 was previously shown as 'Shipped' and has since been cancelled"
+          ],
+          "steps": [
+            "Enter order number ORD-6006",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays 'Cancelled' as the final status rather than 'Shipped'",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-012",
+          "requirement_ids": [
+            "FR-008"
+          ],
+          "criterion_ids": [
+            "AC-012"
+          ],
+          "scenario": "Returned status overrides a previously shown shipped status",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order ORD-6007 was previously shown as 'Shipped' and has since been returned"
+          ],
+          "steps": [
+            "Enter order number ORD-6007",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays 'Returned' as the final status rather than 'Shipped'",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-013",
+          "requirement_ids": [
+            "FR-008",
+            "NFR-007"
+          ],
+          "criterion_ids": [
+            "AC-013"
+          ],
+          "scenario": "Conflicting status data across source systems resolved to terminal status",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Order ORD-6008 - source system A records 'Shipped' while source system B records 'Cancelled'"
+          ],
+          "steps": [
+            "Enter order number ORD-6008",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays 'Cancelled' per the agreed precedence rule rather than the outdated 'Shipped' status",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-014",
+          "requirement_ids": [
+            "FR-009"
+          ],
+          "criterion_ids": [
+            "AC-014"
+          ],
+          "scenario": "Split shipment order displays individual statuses per shipment",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order ORD-7007 is split into shipment SHP-1 (Delivered) and shipment SHP-2 (In Transit)"
+          ],
+          "steps": [
+            "Enter order number ORD-7007",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays separate status details for each shipment/item within the order",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-015",
+          "requirement_ids": [
+            "FR-009"
+          ],
+          "criterion_ids": [
+            "AC-015"
+          ],
+          "scenario": "Shipments within the same order are in different delivery states",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Order ORD-7008 has shipment SHP-A delivered and shipment SHP-B still in transit"
+          ],
+          "steps": [
+            "Enter order number ORD-7008",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays the distinct correct status for each shipment without merging them into a single misleading status",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-016",
+          "requirement_ids": [
+            "FR-010"
+          ],
+          "criterion_ids": [
+            "AC-016"
+          ],
+          "scenario": "Last updated timestamp displayed alongside status",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order ORD-8008 exists with status 'Shipped' and a known last-updated time"
+          ],
+          "steps": [
+            "Enter order number ORD-8008",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays the order status along with the date and time it was last updated",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-017",
+          "requirement_ids": [
+            "FR-010"
+          ],
+          "criterion_ids": [
+            "AC-017"
+          ],
+          "scenario": "Timestamp reflects an extended period of no status change",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Order ORD-8009 status has not changed for an extended period"
+          ],
+          "steps": [
+            "Enter order number ORD-8009",
+            "Enter the matching email address",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays the last updated date and time reflecting the actual (older) time without misrepresenting it as current",
+          "priority": "Low"
+        },
+        {
+          "id": "TC-018",
+          "requirement_ids": [
+            "FR-012"
+          ],
+          "criterion_ids": [
+            "AC-018"
+          ],
+          "scenario": "Normal lookup usage proceeds without restriction",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "No prior rate-limit-triggering activity recorded for the source"
+          ],
+          "steps": [
+            "Submit a valid lookup request from a given source",
+            "Submit a second valid lookup request from the same source shortly after"
+          ],
+          "expected_result": "Both requests are processed normally without any restriction applied",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-019",
+          "requirement_ids": [
+            "FR-012",
+            "NFR-001"
+          ],
+          "criterion_ids": [
+            "AC-019"
+          ],
+          "scenario": "Excessive lookup attempts from the same source are rate limited",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "Source has already submitted an unusually high number of lookup attempts within a short period"
+          ],
+          "steps": [
+            "Submit one additional lookup request from the same source"
+          ],
+          "expected_result": "The system blocks or restricts the request and does not return order status information",
+          "priority": "High"
+        },
+        {
+          "id": "TC-020",
+          "requirement_ids": [
+            "FR-012"
+          ],
+          "criterion_ids": [
+            "AC-020"
+          ],
+          "scenario": "Legitimate customer repeatedly mistyping details triggers rate limiting",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "A customer has made several failed lookup attempts due to mistyped order number or email from the same source"
+          ],
+          "steps": [
+            "Continue submitting lookup attempts from the same source until the rate-limit threshold is reached",
+            "Submit one further attempt"
+          ],
+          "expected_result": "The system applies the rate limiting response regardless of the customer's legitimate intent and returns a generic message",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-021",
+          "requirement_ids": [
+            "FR-013"
+          ],
+          "criterion_ids": [
+            "AC-021"
+          ],
+          "scenario": "Lookup returns status only for the specific order requested",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Customer with email customerD@example.com has two orders: ORD-9001 and ORD-9002"
+          ],
+          "steps": [
+            "Enter order number ORD-9001 with the matching email",
+            "Submit the lookup form"
+          ],
+          "expected_result": "The system displays the status for only ORD-9001 with no information about ORD-9002 or any other order",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-022",
+          "requirement_ids": [
+            "FR-013"
+          ],
+          "criterion_ids": [
+            "AC-022"
+          ],
+          "scenario": "Separate lookups for two orders under the same email return distinct correct results",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Customer with email customerD@example.com has order ORD-9001 (Shipped) and order ORD-9002 (Processing)"
+          ],
+          "steps": [
+            "Look up ORD-9001 with the matching email and record the result",
+            "Look up ORD-9002 with the matching email and record the result"
+          ],
+          "expected_result": "The system returns the correct distinct status for each order without mixing details between them",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-023",
+          "requirement_ids": [
+            "NFR-002"
+          ],
+          "criterion_ids": [],
+          "scenario": "Tracking result excludes sensitive payment and full personal information",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order ORD-1010 exists with an associated customer record containing payment card details and a full personal address"
+          ],
+          "steps": [
+            "Enter order number ORD-1010 and the matching email",
+            "Submit the lookup form",
+            "Inspect the displayed result content"
+          ],
+          "expected_result": "The displayed result includes only non-sensitive information such as status, item summary, and estimated delivery, with no payment details or full personal information shown",
+          "priority": "High"
+        },
+        {
+          "id": "TC-024",
+          "requirement_ids": [
+            "NFR-003"
+          ],
+          "criterion_ids": [],
+          "scenario": "Order status lookup responds within an acceptable time frame",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order ORD-1011 exists with a valid status"
+          ],
+          "steps": [
+            "Enter order number ORD-1011 and the matching email",
+            "Submit the lookup form",
+            "Measure the time from submission to result display"
+          ],
+          "expected_result": "The order status result is returned within the response time threshold agreed by stakeholders for a self-service lookup experience",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-025",
+          "requirement_ids": [
+            "NFR-004"
+          ],
+          "criterion_ids": [],
+          "scenario": "Order tracking feature is available during expected operating hours",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order tracking feature is deployed and expected to be available during normal online store operating hours"
+          ],
+          "steps": [
+            "Access the order tracking page during a time within expected operating hours",
+            "Attempt a valid order lookup"
+          ],
+          "expected_result": "The page loads successfully and the lookup completes, confirming availability during expected operating hours",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-026",
+          "requirement_ids": [
+            "NFR-005"
+          ],
+          "criterion_ids": [],
+          "scenario": "Order tracking page is usable with assistive technologies",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Order tracking page is deployed and accessible for testing"
+          ],
+          "steps": [
+            "Navigate the order tracking page using keyboard only, including form fields and submit control",
+            "Navigate the page and results using a screen reader",
+            "Enter lookup values and submit the form using only assistive technology"
+          ],
+          "expected_result": "All form fields, labels, and results are accessible, correctly announced, and operable via keyboard and screen reader, consistent with recognized accessibility practices",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-027",
+          "requirement_ids": [
+            "NFR-006"
+          ],
+          "criterion_ids": [],
+          "scenario": "Status terminology is clear and consistent across all order and shipment states",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Test orders exist covering each defined status, e.g. Placed, Shipped, Partially Shipped, Cancelled, Returned, Pending"
+          ],
+          "steps": [
+            "Perform a lookup for an order in each defined status in turn",
+            "Record the status terminology displayed for each order"
+          ],
+          "expected_result": "Status labels are clear, consistent, and use uniform terminology conventions across all states with no conflicting or ambiguous wording",
+          "priority": "Low"
+        }
+      ]
+    }
+  }
+}

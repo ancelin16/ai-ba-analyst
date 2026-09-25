@@ -1,0 +1,2879 @@
+{
+  "title": "Sales lead management",
+  "summary": "Includes a deliberate stakeholder conflict",
+  "input": {
+    "project_name": "Sales Lead Management",
+    "request": "Leads from our website, trade shows and partner referrals are tracked in individual spreadsheets and email inboxes, so leads fall through the cracks and managers have no view of the pipeline. We want one place to capture every lead, assign it to a salesperson, set follow-up reminders and report on conversion. The sales team wants every new lead assigned to a rep automatically within five minutes, but the sales director wants to personally review and approve every lead before it is assigned.",
+    "industry": "B2B software",
+    "stakeholders": "Sales representatives, sales director, marketing team, partner managers",
+    "existing_systems": "Website contact form, spreadsheets, email",
+    "constraints": ""
+  },
+  "analysis": {
+    "input": {
+      "project_name": "Sales Lead Management",
+      "request": "Leads from our website, trade shows and partner referrals are tracked in individual spreadsheets and email inboxes, so leads fall through the cracks and managers have no view of the pipeline. We want one place to capture every lead, assign it to a salesperson, set follow-up reminders and report on conversion. The sales team wants every new lead assigned to a rep automatically within five minutes, but the sales director wants to personally review and approve every lead before it is assigned.",
+      "industry": "B2B software",
+      "stakeholders": "Sales representatives, sales director, marketing team, partner managers",
+      "existing_systems": "Website contact form, spreadsheets, email",
+      "constraints": "",
+      "clarifications": [
+        {
+          "question_id": "Q-01",
+          "question": "The sales team wants leads auto-assigned within five minutes, but the sales director wants to personally review and approve every lead before assignment. Which of these rules governs the process, or under what conditions does each apply?",
+          "answer": "Leads are auto-assigned immediately. The sales director only reviews leads from strategic accounts (over 500 employees), and those must be approved within 4 business hours or they auto-assign."
+        }
+      ]
+    },
+    "created_at": "2026-09-24T19:50:49.154000Z",
+    "model": "claude-sonnet-5",
+    "is_demo": false,
+    "questions": {
+      "questions": [
+        {
+          "id": "Q-01",
+          "question": "The sales team wants leads auto-assigned within five minutes, but the sales director wants to personally review and approve every lead before assignment. Which of these rules governs the process, or under what conditions does each apply?",
+          "category": "Critical",
+          "area": "Business Rules",
+          "rationale": "These two stated requirements are contradictory; without resolving them the assignment workflow cannot be designed and either the speed goal or the approval control will be violated."
+        },
+        {
+          "id": "Q-02",
+          "question": "If the sales director must approve every lead, what is the maximum acceptable delay between lead capture and assignment, and what happens to the five-minute goal?",
+          "category": "Critical",
+          "area": "Business Rules",
+          "rationale": "A manual approval step inherently conflicts with a five-minute SLA; the actual target must be defined to design reminders and escalation logic."
+        },
+        {
+          "id": "Q-03",
+          "question": "What rule determines which salesperson a lead is assigned to (e.g., territory, product line, round-robin, lead source, workload)?",
+          "category": "Critical",
+          "area": "Business Rules",
+          "rationale": "Without an assignment rule, the system cannot automate distribution, which is a core objective of the request."
+        },
+        {
+          "id": "Q-04",
+          "question": "What data fields must be captured for each lead from each source (website form, trade shows, partner referrals), and which fields are mandatory versus optional?",
+          "category": "Critical",
+          "area": "Data",
+          "rationale": "Lead capture and reporting depend on a defined data model; without it, forms, validations and conversion reports cannot be built."
+        },
+        {
+          "id": "Q-05",
+          "question": "How will leads from trade shows and partner referrals be entered into the new system \u2014 manual entry, file upload, a dedicated form, or an integration?",
+          "category": "Critical",
+          "area": "Integration",
+          "rationale": "These sources currently rely on spreadsheets and email; the input does not state how they will be captured going forward, which affects both scope and integration design."
+        },
+        {
+          "id": "Q-06",
+          "question": "Does the website contact form need to integrate automatically with the new system, or will marketing continue to manually transfer leads?",
+          "category": "Critical",
+          "area": "Integration",
+          "rationale": "The request implies the website is a lead source, but does not confirm whether direct integration is required, which significantly affects technical scope."
+        },
+        {
+          "id": "Q-07",
+          "question": "What defines a 'converted' lead for reporting purposes (e.g., qualified opportunity, closed deal, signed contract)?",
+          "category": "Critical",
+          "area": "Success Metrics",
+          "rationale": "Conversion reporting is a named requirement, but without a definition of conversion, the metric cannot be built or validated."
+        },
+        {
+          "id": "Q-08",
+          "question": "What happens if the sales director does not review a lead within a defined time \u2014 is there an escalation, auto-assignment fallback, or delegation to another approver?",
+          "category": "Important",
+          "area": "Business Rules",
+          "rationale": "Without an exception path, leads could stall indefinitely if the director is unavailable, undermining the goal of preventing leads from falling through the cracks."
+        },
+        {
+          "id": "Q-09",
+          "question": "Can the sales director reject or reassign a lead during review, and if so, what happens to a rejected lead (returned to marketing, discarded, flagged for follow-up)?",
+          "category": "Important",
+          "area": "Business Rules",
+          "rationale": "The approval step implies a possible rejection outcome, but the resulting workflow is undefined."
+        },
+        {
+          "id": "Q-10",
+          "question": "Who else, besides sales reps, sales director, marketing and partner managers, should have visibility into the pipeline (e.g., executives, finance, customer success)?",
+          "category": "Important",
+          "area": "Users",
+          "rationale": "Reporting and pipeline visibility needs may extend beyond the stated stakeholders, affecting access control design."
+        },
+        {
+          "id": "Q-11",
+          "question": "What level of access should marketing team members and partner managers have \u2014 can they view lead status/assignment, or only submit leads?",
+          "category": "Important",
+          "area": "Security",
+          "rationale": "The system will hold sales pipeline data; without defined access levels per role, authorization rules cannot be specified."
+        },
+        {
+          "id": "Q-12",
+          "question": "Will lead or customer data include personal information subject to privacy regulations, and are there existing data retention or handling policies that apply?",
+          "category": "Important",
+          "area": "Compliance",
+          "rationale": "B2B lead data often includes personal contact details; without clarification, data retention and privacy requirements cannot be defined."
+        },
+        {
+          "id": "Q-13",
+          "question": "How will follow-up reminders be delivered (in-app, email, mobile notification), and who is responsible for acting on overdue reminders?",
+          "category": "Important",
+          "area": "Business Rules",
+          "rationale": "Reminders are a named feature, but delivery channel and escalation ownership are undefined, affecting design and adoption."
+        },
+        {
+          "id": "Q-14",
+          "question": "Does the new system need to integrate with any existing tools such as email, calendar, or a CRM, or will it be a standalone system replacing spreadsheets and email entirely?",
+          "category": "Important",
+          "area": "Integration",
+          "rationale": "The current process uses email and spreadsheets; unclear whether these are fully replaced or need to coexist with the new system."
+        },
+        {
+          "id": "Q-15",
+          "question": "Are there specific timeline, budget, or technology platform constraints (e.g., must use an existing CRM license, cloud-only, mobile access required) that will shape the solution?",
+          "category": "Important",
+          "area": "Constraints",
+          "rationale": "Constraints were marked as not provided; without them, solution options cannot be scoped or prioritized realistically."
+        },
+        {
+          "id": "Q-16",
+          "question": "How will success of this initiative be measured beyond conversion rate (e.g., reduction in lost leads, time-to-first-contact, pipeline visibility for managers)?",
+          "category": "Nice to Know",
+          "area": "Success Metrics",
+          "rationale": "Additional metrics would help validate that the core pain points (leads falling through cracks, lack of pipeline view) are resolved."
+        },
+        {
+          "id": "Q-17",
+          "question": "Should historical leads currently sitting in spreadsheets and email inboxes be migrated into the new system, and if so, how far back?",
+          "category": "Nice to Know",
+          "area": "Data",
+          "rationale": "Migration scope affects data cleanup effort and reporting completeness but does not block core functional design."
+        }
+      ]
+    },
+    "problem": {
+      "problem_statement": "Leads generated from the website, trade shows and partner referrals are tracked manually across individual spreadsheets and email inboxes, causing leads to be lost or delayed and leaving sales management without visibility into the overall pipeline.",
+      "objectives": [
+        {
+          "id": "BO-01",
+          "description": "Centralize capture of all leads from website, trade show and partner referral sources into a single system so no lead is lost or overlooked.",
+          "success_measure": "",
+          "basis": "Stated"
+        },
+        {
+          "id": "BO-02",
+          "description": "Automatically assign standard (non-strategic) leads to a sales representative within five minutes of capture.",
+          "success_measure": "Lead assigned within 5 minutes of capture",
+          "basis": "Stated"
+        },
+        {
+          "id": "BO-03",
+          "description": "Route leads from strategic accounts (organizations with more than 500 employees) to the sales director for review and approval, auto-assigning them if not approved within 4 business hours.",
+          "success_measure": "Strategic account leads reviewed or auto-assigned within 4 business hours",
+          "basis": "Stated"
+        },
+        {
+          "id": "BO-04",
+          "description": "Give sales managers and the sales director real-time visibility into the full sales pipeline.",
+          "success_measure": "",
+          "basis": "Stated"
+        },
+        {
+          "id": "BO-05",
+          "description": "Enable reporting on lead conversion rates to support sales performance analysis.",
+          "success_measure": "",
+          "basis": "Stated"
+        }
+      ],
+      "target_users": [
+        "Sales representatives",
+        "Sales director",
+        "Marketing team",
+        "Partner managers"
+      ],
+      "current_state": "Leads from the website, trade shows and partner referrals are recorded in separate spreadsheets and email inboxes maintained individually, with no shared system, assignment process, or reporting mechanism. This leads to leads being missed and gives managers no consolidated view of the pipeline.",
+      "future_state": "All leads are captured in a single system regardless of source. Standard leads are automatically assigned to a sales representative within five minutes. Leads from strategic accounts (over 500 employees) are routed to the sales director for approval, auto-assigning after 4 business hours if not reviewed. Follow-up reminders are set for assigned leads, and conversion is tracked and reportable.",
+      "in_scope": [
+        "Capturing leads from the website, trade shows and partner referrals into one system",
+        "Automatic assignment of standard leads to sales representatives within five minutes",
+        "Conditional approval workflow for strategic account leads (>500 employees) with a 4-business-hour review window and auto-assignment fallback",
+        "Setting follow-up reminders for assigned leads",
+        "Reporting on lead conversion"
+      ],
+      "out_of_scope": [],
+      "ambiguities": [
+        "How leads from trade shows will be entered into the system (manual entry, batch upload, or integration) is not specified.",
+        "The logic for determining which specific salesperson a lead is assigned to (e.g., territory, round robin, product line) is not defined.",
+        "Whether 'strategic account' criteria include factors beyond employee count (e.g., revenue, industry) is unclear.",
+        "It is unclear whether the 4-business-hour review clock starts at lead capture or at some other point (e.g., when routed to the director)."
+      ],
+      "conflicts": [],
+      "is_too_vague": false,
+      "missing_information": []
+    },
+    "stakeholders": {
+      "stakeholders": [
+        {
+          "id": "SH-01",
+          "name": "Sales Representatives",
+          "type": "Internal",
+          "interest": "Wants leads assigned automatically and quickly (within five minutes) so they can act on them promptly and not lose deals to delay.",
+          "influence": "Medium",
+          "impact": "High",
+          "basis": "Stated",
+          "potentially_missing": false
+        },
+        {
+          "id": "SH-02",
+          "name": "Sales Director",
+          "type": "Internal",
+          "interest": "Wants visibility into the full pipeline, conversion reporting, and the ability to personally review and approve leads from strategic accounts before assignment.",
+          "influence": "High",
+          "impact": "High",
+          "basis": "Stated",
+          "potentially_missing": false
+        },
+        {
+          "id": "SH-03",
+          "name": "Marketing Team",
+          "type": "Internal",
+          "interest": "Generates leads via the website and needs assurance that leads they source are captured accurately and can be tracked through to conversion for campaign ROI reporting.",
+          "influence": "Medium",
+          "impact": "Medium",
+          "basis": "Stated",
+          "potentially_missing": false
+        },
+        {
+          "id": "SH-04",
+          "name": "Partner Managers",
+          "type": "External",
+          "interest": "Needs referred leads from partners to be captured reliably and wants visibility into how partner-sourced leads are progressing and converting.",
+          "influence": "Medium",
+          "impact": "Medium",
+          "basis": "Stated",
+          "potentially_missing": false
+        },
+        {
+          "id": "SH-05",
+          "name": "Sales Managers",
+          "type": "Internal",
+          "interest": "Needs a consolidated view of the pipeline across all reps to monitor workload distribution and follow-up activity, since current spreadsheets/inboxes give no such visibility.",
+          "influence": "Medium",
+          "impact": "High",
+          "basis": "Inferred",
+          "potentially_missing": false
+        },
+        {
+          "id": "SH-06",
+          "name": "IT / Systems Owner",
+          "type": "Internal",
+          "interest": "Responsible for implementing, integrating (e.g., website contact form, email) and maintaining the new lead management system, and for decommissioning or migrating data from spreadsheets and inboxes.",
+          "influence": "Medium",
+          "impact": "Medium",
+          "basis": "Assumed",
+          "potentially_missing": true
+        },
+        {
+          "id": "SH-07",
+          "name": "Data Privacy / Compliance Officer",
+          "type": "Internal",
+          "interest": "Needs to ensure that centralized storage of lead contact data (from website, trade shows, partners) complies with applicable data protection obligations, since data will move from scattered spreadsheets/email into one shared system.",
+          "influence": "Medium",
+          "impact": "Low",
+          "basis": "Assumed",
+          "potentially_missing": true
+        },
+        {
+          "id": "SH-08",
+          "name": "Business Process / Product Owner",
+          "type": "Internal",
+          "interest": "Owns approval of final requirements, prioritization decisions (e.g., resolving the auto-assign vs. director-review conflict), and sign-off on scope for the new system.",
+          "influence": "High",
+          "impact": "Medium",
+          "basis": "Assumed",
+          "potentially_missing": true
+        }
+      ]
+    },
+    "process": {
+      "sufficient_detail": true,
+      "current_state": [
+        {
+          "id": "CS-01",
+          "actor": "Website contact form",
+          "description": "Captures lead information submitted by prospect",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-02",
+          "actor": "Marketing team",
+          "description": "Records website lead details into a spreadsheet",
+          "is_manual": true,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-03",
+          "actor": "Sales representative",
+          "description": "Collects lead information at trade show (e.g., business card or notes)",
+          "is_manual": true,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-04",
+          "actor": "Sales representative",
+          "description": "Enters trade show lead into a spreadsheet",
+          "is_manual": true,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-05",
+          "actor": "Partner manager",
+          "description": "Emails partner referral lead details to sales team",
+          "is_manual": true,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-06",
+          "actor": "Sales representative",
+          "description": "Checks email inbox for partner referral leads",
+          "is_manual": true,
+          "is_bottleneck": true,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-07",
+          "actor": "Sales manager",
+          "description": "Reviews spreadsheets and email inboxes to identify unassigned leads",
+          "is_manual": true,
+          "is_bottleneck": true,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-08",
+          "actor": "Sales manager",
+          "description": "Manually assigns lead to a sales representative via email",
+          "is_manual": true,
+          "is_bottleneck": true,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-09",
+          "actor": "Sales representative",
+          "description": "Sets a follow-up reminder manually using personal calendar or notes",
+          "is_manual": true,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "CS-10",
+          "actor": "Sales manager",
+          "description": "Compiles conversion data manually from spreadsheets for reporting",
+          "is_manual": true,
+          "is_bottleneck": true,
+          "next_step_ids": []
+        }
+      ],
+      "future_state": [
+        {
+          "id": "FS-01",
+          "actor": "Sales lead management system",
+          "description": "Captures lead from website form, trade show entry, or partner referral",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "FS-02",
+          "actor": "System",
+          "description": "Evaluates lead against strategic account criteria (over 500 employees)",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": [
+            "FS-03",
+            "FS-04"
+          ]
+        },
+        {
+          "id": "FS-03",
+          "actor": "System",
+          "description": "Auto-assigns standard lead to a sales representative within 5 minutes",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": [
+            "FS-07"
+          ]
+        },
+        {
+          "id": "FS-04",
+          "actor": "System",
+          "description": "Routes strategic account lead to sales director for review",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "FS-05",
+          "actor": "Sales director",
+          "description": "Reviews and approves strategic lead within 4 business hours",
+          "is_manual": true,
+          "is_bottleneck": true,
+          "next_step_ids": [
+            "FS-07",
+            "FS-06"
+          ]
+        },
+        {
+          "id": "FS-06",
+          "actor": "System",
+          "description": "Auto-assigns strategic lead to a sales representative if not approved within 4 business hours",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": [
+            "FS-07"
+          ]
+        },
+        {
+          "id": "FS-07",
+          "actor": "System",
+          "description": "Sets follow-up reminder for assigned lead",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "FS-08",
+          "actor": "Sales representative",
+          "description": "Follows up with lead per reminder",
+          "is_manual": true,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "FS-09",
+          "actor": "System",
+          "description": "Tracks lead status and conversion metrics",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        },
+        {
+          "id": "FS-10",
+          "actor": "Sales manager / Sales director",
+          "description": "Reviews pipeline and conversion reports",
+          "is_manual": false,
+          "is_bottleneck": false,
+          "next_step_ids": []
+        }
+      ],
+      "bottlenecks": [
+        "CS-06: Checking email inboxes for partner referral leads delays capture and risks leads being overlooked.",
+        "CS-07: Manual review of scattered spreadsheets and emails to find unassigned leads delays assignment and increases risk of leads falling through the cracks.",
+        "CS-08: Manual, email-based lead assignment is slow and inconsistent, undermining the sales team's desire for near-immediate assignment.",
+        "CS-10: Manual compilation of conversion data from spreadsheets delays reporting and pipeline visibility.",
+        "FS-05: Sales director review of strategic account leads could still delay assignment if the director does not act within the 4-business-hour window, though the system's auto-assign fallback limits the impact."
+      ],
+      "manual_activities": [
+        "CS-02: Marketing team records website lead details into a spreadsheet.",
+        "CS-03: Sales representative collects trade show lead information manually.",
+        "CS-04: Sales representative enters trade show lead into a spreadsheet.",
+        "CS-05: Partner manager emails partner referral lead details to sales team.",
+        "CS-06: Sales representative checks email inbox for partner referral leads.",
+        "CS-07: Sales manager reviews spreadsheets and emails to identify unassigned leads.",
+        "CS-08: Sales manager manually assigns lead via email.",
+        "CS-09: Sales representative manually sets follow-up reminders.",
+        "CS-10: Sales manager manually compiles conversion data for reporting.",
+        "FS-05: Sales director manually reviews and approves strategic account leads.",
+        "FS-08: Sales representative manually follows up with the lead."
+      ],
+      "inefficiencies": [
+        "Leads from three different sources (website, trade show, partner referral) are captured in disconnected spreadsheets and email inboxes with no single source of truth (CS-01 through CS-06).",
+        "No automated assignment logic exists, so leads wait for a manager to notice and assign them, contradicting the sales team's expectation of near-immediate assignment (CS-07, CS-08).",
+        "Follow-up reminders are set manually and informally, making them easy to forget or lose (CS-09).",
+        "Conversion reporting depends on manually compiling data from multiple spreadsheets, delaying visibility into pipeline performance and making the sales director's oversight of the process reactive rather than proactive (CS-10)."
+      ],
+      "automation_opportunities": [
+        "Replace manual spreadsheet entry for website and trade show leads (CS-02, CS-04) with direct system capture (FS-01), eliminating transcription effort and reducing missed or duplicate leads.",
+        "Automate lead routing and assignment (replacing CS-07 and CS-08 with FS-02/FS-03) so standard leads are assigned within 5 minutes without manager intervention.",
+        "Automate detection of strategic accounts and routing to the sales director (FS-02, FS-04) with a system-enforced 4-business-hour approval window and auto-assignment fallback (FS-06), preserving director oversight for high-value leads while preventing indefinite delay.",
+        "Automate follow-up reminder creation tied to lead assignment (FS-07) so reminders are never dependent on a rep remembering to set them, unlike the manual step in CS-09.",
+        "Replace manual spreadsheet-based conversion reporting (CS-10) with system-generated tracking (FS-09), giving managers real-time pipeline and conversion visibility instead of periodic manual compilation."
+      ],
+      "notes": "The future-state map assumes a single system can ingest leads from all three sources (website, trade show, partner referral); the exact mechanism for trade show and partner-referral capture (manual entry, batch upload, or integration) is not specified in the input and should be confirmed with stakeholders. The classification of 'strategic account' is assumed to rely solely on employee count (>500) as stated; any additional criteria would need confirmation."
+    },
+    "risks": {
+      "risks": [
+        {
+          "id": "RK-01",
+          "description": "Trade show and partner referral leads may require manual entry or batch upload (no integration defined), so leads captured on paper or via partner email are delayed or never logged, missing the 5-minute assignment goal.",
+          "source": "Process",
+          "likelihood": "High",
+          "impact": "High",
+          "mitigation": "Define and build a lead intake method (dedicated form or lightweight integration) for trade show and partner leads before go-live, and set an SLA for manual entry timing."
+        },
+        {
+          "id": "RK-02",
+          "description": "The website contact form may not be automatically integrated with the new system, so leads sit in an inbox awaiting manual transfer, undermining the 5-minute auto-assignment commitment.",
+          "source": "Technical",
+          "likelihood": "Medium",
+          "impact": "High",
+          "mitigation": "Confirm integration requirement with marketing and IT early; if manual transfer is required, set a maximum handling time and monitor compliance."
+        },
+        {
+          "id": "RK-03",
+          "description": "Strategic account classification depends on employee count data that may be missing, self-reported, or unverified at the moment a lead is captured, causing leads to be misrouted (a large account auto-assigned, or a small account unnecessarily sent to the director).",
+          "source": "Data",
+          "likelihood": "High",
+          "impact": "Medium",
+          "mitigation": "Define a reliable data source for employee count (e.g., enrichment service or mandatory field) and a fallback rule for when it is unknown."
+        },
+        {
+          "id": "RK-04",
+          "description": "A lead could be approved by the sales director at nearly the same moment the 4-business-hour auto-assignment fallback fires, resulting in the lead being assigned twice or to conflicting reps.",
+          "source": "Technical",
+          "likelihood": "Medium",
+          "impact": "Medium",
+          "mitigation": "Implement a locking mechanism so approval and auto-assignment cannot both execute on the same lead, with the earlier action taking precedence."
+        },
+        {
+          "id": "RK-05",
+          "description": "Leads from the same company or contact may be submitted through multiple channels (website, trade show, partner referral), creating duplicate records that split conversion reporting and cause multiple reps to contact the same prospect.",
+          "source": "Data",
+          "likelihood": "Medium",
+          "impact": "Medium",
+          "mitigation": "Introduce a duplicate-detection rule (e.g., match on email/company domain) and a merge or flagging process before assignment."
+        },
+        {
+          "id": "RK-06",
+          "description": "Sales representatives, accustomed to selecting leads manually from spreadsheets, may resist automatic assignment, leading to leads being ignored or reassigned informally outside the system.",
+          "source": "Adoption",
+          "likelihood": "Medium",
+          "impact": "Medium",
+          "mitigation": "Involve sales reps in defining assignment rules, communicate the rationale, and monitor early usage for workaround behavior."
+        },
+        {
+          "id": "RK-07",
+          "description": "Because 'converted' is not yet defined, conversion reports could be built on an ad hoc or inconsistent definition, producing metrics the sales director does not trust or cannot act on.",
+          "source": "Business",
+          "likelihood": "Medium",
+          "impact": "High",
+          "mitigation": "Agree a precise, documented definition of lead conversion with the sales director before reporting requirements are finalized."
+        },
+        {
+          "id": "RK-08",
+          "description": "If lead or contact data includes personal information and no data handling or retention policy is defined, the system could be built without necessary privacy controls, creating compliance exposure later.",
+          "source": "Compliance",
+          "likelihood": "Low",
+          "impact": "High",
+          "mitigation": "Confirm with compliance/legal whether personal data rules apply and incorporate any required consent, storage or retention controls into design."
+        },
+        {
+          "id": "RK-09",
+          "description": "Without a defined territory, product-line, or round-robin assignment rule, development of the auto-assignment feature could stall or be built on an incorrect assumption, delaying delivery.",
+          "source": "Project",
+          "likelihood": "Medium",
+          "impact": "High",
+          "mitigation": "Prioritize resolving the assignment logic with the sales director and reps in an early requirements workshop before design begins."
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "AS-01",
+          "description": "Leads will be assigned to a specific salesperson using a rule such as territory, round-robin, or workload balancing, to be defined during requirements.",
+          "impact_if_wrong": "Assignment logic would need to be redesigned, potentially delaying the 5-minute auto-assignment feature.",
+          "validate_with": "Sales director"
+        },
+        {
+          "id": "AS-02",
+          "description": "Trade show and partner referral leads will be entered into the system manually or via file upload rather than through a real-time integration.",
+          "impact_if_wrong": "Additional integration work would be required, affecting timeline and the ability to meet the 5-minute assignment target for these sources.",
+          "validate_with": "Marketing team and partner managers"
+        },
+        {
+          "id": "AS-03",
+          "description": "The existing website contact form will be integrated so leads flow into the new system automatically rather than requiring manual transfer.",
+          "impact_if_wrong": "A manual handoff step would need to be designed, adding delay risk to the 5-minute goal for website leads.",
+          "validate_with": "Marketing team / IT"
+        },
+        {
+          "id": "AS-04",
+          "description": "Employee count data needed to identify strategic accounts (over 500 employees) will be reliably available at the point a lead is captured.",
+          "impact_if_wrong": "Strategic leads could be missed or standard leads incorrectly routed to the director, undermining the approval workflow.",
+          "validate_with": "Sales director"
+        },
+        {
+          "id": "AS-05",
+          "description": "A 'converted' lead will be defined as a signed contract or closed deal for the purposes of conversion reporting.",
+          "impact_if_wrong": "Conversion reports would measure the wrong outcome and require rebuilding once the correct definition is confirmed.",
+          "validate_with": "Sales director"
+        },
+        {
+          "id": "AS-06",
+          "description": "The new system will operate as a standalone tool and does not need to integrate with an existing CRM, calendar, or email system.",
+          "impact_if_wrong": "Additional integration requirements would need to be scoped, affecting technical design and timeline.",
+          "validate_with": "Sales director / IT"
+        },
+        {
+          "id": "AS-07",
+          "description": "The 4-business-hour review window for strategic account leads starts at the moment the lead is captured, not at a later routing step.",
+          "impact_if_wrong": "The auto-assignment fallback timing logic would need to be redefined, changing when strategic leads default to auto-assignment.",
+          "validate_with": "Sales director"
+        },
+        {
+          "id": "AS-08",
+          "description": "Marketing team members and partner managers will have permission to submit leads and view basic status, but not full pipeline or reporting access.",
+          "impact_if_wrong": "Access control design and reporting views would need to be revised to reflect broader or narrower permissions.",
+          "validate_with": "Sales director"
+        },
+        {
+          "id": "AS-09",
+          "description": "No specific budget, deadline, or mandated technology platform has been set for this project.",
+          "impact_if_wrong": "Solution options and delivery timeline would need to be re-evaluated against any newly disclosed constraint.",
+          "validate_with": "Project sponsor"
+        },
+        {
+          "id": "AS-10",
+          "description": "Lead and contact data collected does not currently fall under a defined privacy or retention policy beyond general good practice.",
+          "impact_if_wrong": "Additional compliance controls (consent capture, retention limits, data handling) would need to be added to the design.",
+          "validate_with": "Compliance/legal representative"
+        }
+      ],
+      "constraints": [
+        {
+          "id": "CN-01",
+          "description": "The solution must accommodate leads originating from three existing channels: the website contact form, trade shows, and partner referrals, which are currently tracked in spreadsheets and email.",
+          "type": "Technical",
+          "basis": "Stated"
+        },
+        {
+          "id": "CN-02",
+          "description": "Standard (non-strategic) leads must be automatically assigned to a sales representative within five minutes of capture.",
+          "type": "Business rule",
+          "basis": "Stated"
+        },
+        {
+          "id": "CN-03",
+          "description": "Leads from accounts with more than 500 employees must be routed to the sales director for review, with a 4-business-hour approval window before auto-assignment occurs.",
+          "type": "Business rule",
+          "basis": "Stated"
+        },
+        {
+          "id": "CN-04",
+          "description": "The strategic account threshold is defined by employee count exceeding 500; no other qualifying criteria have been specified.",
+          "type": "Business rule",
+          "basis": "Stated"
+        }
+      ],
+      "edge_cases": [
+        "A lead is captured without employee count data available, making it impossible to determine whether it qualifies as a strategic account.",
+        "A lead from a strategic account is submitted near the end of business hours, so the 4-business-hour review window spans a weekend, holiday, or overnight period.",
+        "The same contact or company submits leads through more than one channel (e.g., website and trade show) within a short time, creating duplicate lead records.",
+        "The sales director approves or rejects a strategic lead at nearly the same moment the 4-hour auto-assignment fallback is triggered, risking a double or conflicting assignment.",
+        "A partner referral or trade show lead is entered with incomplete contact information (e.g., missing email or phone number), preventing follow-up or assignment.",
+        "A company's employee count changes (e.g., due to a data update or acquisition) between when a lead is first captured and when it would be classified, changing whether it should have been routed to the director.",
+        "A lead is assigned to a sales representative who is unavailable, on leave, or has left the company at the time of assignment.",
+        "A trade show batch upload contains malformed, incomplete, or duplicate records that fail standard field validation.",
+        "A lead rejected or declined by the sales director needs a defined next step, such as returning to marketing, discarding, or flagging for later follow-up."
+      ]
+    },
+    "requirements": {
+      "functional": [
+        {
+          "id": "FR-001",
+          "description": "The system shall capture lead information submitted through the website contact form into a single lead record.",
+          "priority": "Must Have",
+          "rationale": "Leads from the website are currently tracked separately in spreadsheets, causing loss and delay; centralizing capture is core to the objective of a single lead repository.",
+          "objective_ids": [
+            "BO-01"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-002",
+          "description": "The system shall allow authorized users to manually enter lead information collected at trade shows.",
+          "priority": "Must Have",
+          "rationale": "Trade show leads are currently recorded informally (business cards, notes) and must reach the central system; the capture mechanism is not fully specified so manual entry is assumed as the baseline method.",
+          "objective_ids": [
+            "BO-01"
+          ],
+          "basis": "Assumed"
+        },
+        {
+          "id": "FR-003",
+          "description": "The system shall allow partner managers to submit partner referral lead information directly into the system.",
+          "priority": "Must Have",
+          "rationale": "Partner referrals are currently emailed and checked manually, a known bottleneck; direct submission removes reliance on email inboxes.",
+          "objective_ids": [
+            "BO-01"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-004",
+          "description": "The system shall require a minimum set of contact fields (such as name and email or phone) before a lead record can be saved, and shall reject submissions missing these fields with an explanatory error.",
+          "priority": "Must Have",
+          "rationale": "Incomplete lead records prevent follow-up and assignment, undermining pipeline reliability.",
+          "objective_ids": [
+            "BO-01"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-005",
+          "description": "The system shall evaluate each captured lead against the strategic account criterion of more than 500 employees to classify it as standard or strategic.",
+          "priority": "Must Have",
+          "rationale": "This classification determines whether a lead is auto-assigned or routed for director review, per the agreed process.",
+          "objective_ids": [
+            "BO-02",
+            "BO-03"
+          ],
+          "basis": "Stated"
+        },
+        {
+          "id": "FR-006",
+          "description": "The system shall automatically assign each standard (non-strategic) lead to a sales representative within five minutes of capture.",
+          "priority": "Must Have",
+          "rationale": "Directly fulfills the sales team's requirement for near-immediate assignment and removes the manual assignment bottleneck.",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Stated"
+        },
+        {
+          "id": "FR-007",
+          "description": "The system shall route each strategic account lead (over 500 employees) to the sales director for review and approval instead of auto-assigning it immediately.",
+          "priority": "Must Have",
+          "rationale": "Preserves the sales director's requirement to personally review high-value leads before assignment.",
+          "objective_ids": [
+            "BO-03"
+          ],
+          "basis": "Stated"
+        },
+        {
+          "id": "FR-008",
+          "description": "The system shall allow the sales director to approve a strategic account lead and assign it to a specific sales representative.",
+          "priority": "Must Have",
+          "rationale": "Enables the director to exercise the review authority defined for strategic accounts.",
+          "objective_ids": [
+            "BO-03"
+          ],
+          "basis": "Stated"
+        },
+        {
+          "id": "FR-009",
+          "description": "The system shall automatically assign a strategic account lead to a sales representative if the sales director has not approved it within 4 business hours of routing.",
+          "priority": "Must Have",
+          "rationale": "Prevents strategic leads from stalling indefinitely if the director does not act in time, balancing oversight with responsiveness.",
+          "objective_ids": [
+            "BO-03"
+          ],
+          "basis": "Stated"
+        },
+        {
+          "id": "FR-010",
+          "description": "The system shall prevent a strategic account lead from being assigned more than once when a director approval and the 4-business-hour auto-assignment fallback occur close together, giving precedence to whichever action completes first.",
+          "priority": "Must Have",
+          "rationale": "Avoids conflicting or duplicate assignment of the same lead to different representatives, a risk identified in the approval/fallback timing overlap.",
+          "objective_ids": [
+            "BO-03"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-011",
+          "description": "The system shall automatically create a follow-up reminder for a sales representative when a lead is assigned to them.",
+          "priority": "Must Have",
+          "rationale": "Removes reliance on reps remembering to set reminders manually, addressing a current source of missed follow-up.",
+          "objective_ids": [
+            "BO-01"
+          ],
+          "basis": "Stated"
+        },
+        {
+          "id": "FR-012",
+          "description": "The system shall notify a sales representative when a new lead has been assigned to them.",
+          "priority": "Should Have",
+          "rationale": "Ensures reps become aware of new leads promptly enough to act within the intended assignment window.",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-013",
+          "description": "The system shall provide sales managers and the sales director with a consolidated view of all leads and their current status across the pipeline.",
+          "priority": "Must Have",
+          "rationale": "Directly addresses the lack of pipeline visibility that is a stated business problem.",
+          "objective_ids": [
+            "BO-04"
+          ],
+          "basis": "Stated"
+        },
+        {
+          "id": "FR-014",
+          "description": "The system shall generate reports on lead conversion across sources and sales representatives.",
+          "priority": "Must Have",
+          "rationale": "Supports sales performance analysis and reporting need stated by the business.",
+          "objective_ids": [
+            "BO-05"
+          ],
+          "basis": "Stated"
+        },
+        {
+          "id": "FR-015",
+          "description": "The system shall flag potential duplicate leads when a matching contact or company is captured through more than one channel within a short period.",
+          "priority": "Should Have",
+          "rationale": "Prevents duplicate reps contacting the same prospect and split conversion reporting, a risk identified from leads entering via multiple channels.",
+          "objective_ids": [
+            "BO-01",
+            "BO-05"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "FR-016",
+          "description": "The system shall not integrate with any external CRM, calendar, or email system in this release.",
+          "priority": "Won't Have",
+          "rationale": "Recorded scope boundary since no integration requirement with existing tools beyond the website form has been confirmed by stakeholders.",
+          "objective_ids": [],
+          "basis": "Assumed"
+        },
+        {
+          "id": "FR-017",
+          "description": "The system shall not automatically enrich lead records with third-party employee count or firmographic data in this release.",
+          "priority": "Won't Have",
+          "rationale": "No data enrichment source has been specified or confirmed; strategic account classification will rely on data provided at capture until this is resolved.",
+          "objective_ids": [],
+          "basis": "Assumed"
+        }
+      ],
+      "non_functional": [
+        {
+          "id": "NFR-001",
+          "category": "Performance",
+          "description": "The system shall complete automatic assignment of a standard lead within the target time window from the moment the lead is captured.",
+          "priority": "Must Have",
+          "rationale": "Meeting the five-minute assignment expectation is a core, explicitly stated success factor for the sales team.",
+          "measurable_target": "Assignment completed within 5 minutes of capture",
+          "objective_ids": [
+            "BO-02"
+          ],
+          "basis": "Stated"
+        },
+        {
+          "id": "NFR-002",
+          "category": "Reliability",
+          "description": "The system shall reliably capture and retain every submitted lead without loss, regardless of source.",
+          "priority": "Must Have",
+          "rationale": "The central business problem is leads falling through the cracks; the new system must eliminate that failure mode.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-01"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "NFR-003",
+          "category": "Security",
+          "description": "The system shall restrict access to lead data and assignment/approval actions based on the user's role (sales representative, sales director, marketing, partner manager).",
+          "priority": "Must Have",
+          "rationale": "Different stakeholder groups have different needs and should not have unrestricted access to pipeline data or approval controls, particularly the director-only approval step.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-03",
+            "BO-04"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "NFR-004",
+          "category": "Data Privacy",
+          "description": "The system shall handle lead contact data (such as names, emails and phone numbers) in a manner consistent with applicable data protection obligations, to be confirmed with compliance stakeholders.",
+          "priority": "Should Have",
+          "rationale": "Centralizing personal contact data from multiple sources into one system increases exposure if handling requirements are not defined and applied.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-01"
+          ],
+          "basis": "Assumed"
+        },
+        {
+          "id": "NFR-005",
+          "category": "Usability",
+          "description": "The system shall allow sales representatives and partner managers to enter or review lead information with minimal steps, suitable for use in time-constrained settings such as a trade show floor.",
+          "priority": "Should Have",
+          "rationale": "Manual entry of trade show leads must be quick and simple to encourage adoption and avoid a return to informal note-taking.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-01"
+          ],
+          "basis": "Inferred"
+        },
+        {
+          "id": "NFR-006",
+          "category": "Availability",
+          "description": "The system shall be available during normal business hours so that lead capture, assignment and the director's review window function without interruption.",
+          "priority": "Must Have",
+          "rationale": "The 4-business-hour approval window and 5-minute assignment target both depend on the system being consistently operational during working hours.",
+          "measurable_target": "",
+          "objective_ids": [
+            "BO-02",
+            "BO-03"
+          ],
+          "basis": "Inferred"
+        }
+      ]
+    },
+    "stories": {
+      "stories": [
+        {
+          "id": "US-001",
+          "role": "marketing team",
+          "want": "to have leads submitted through the website contact form automatically captured into the central lead management system",
+          "so_that": "marketing-sourced leads are not lost in spreadsheets and can be tracked through to conversion for campaign reporting",
+          "priority": "Must Have",
+          "business_value": "Ensures no website-generated lead is lost, directly addressing the core problem of leads falling through the cracks.",
+          "requirement_ids": [
+            "FR-001"
+          ]
+        },
+        {
+          "id": "US-002",
+          "role": "sales representative",
+          "want": "to manually enter lead information collected at trade shows, with required contact fields validated before the record can be saved",
+          "so_that": "trade show leads are captured accurately and reliably instead of being lost on business cards or notes",
+          "priority": "Must Have",
+          "business_value": "Reduces lost trade show leads and ensures every captured record has enough information to enable follow-up and assignment.",
+          "requirement_ids": [
+            "FR-002",
+            "FR-004"
+          ]
+        },
+        {
+          "id": "US-003",
+          "role": "partner manager",
+          "want": "to submit partner referral lead information directly into the system",
+          "so_that": "partner-sourced leads are reliably captured and I can track their progress without relying on email inboxes",
+          "priority": "Must Have",
+          "business_value": "Removes the current email-based bottleneck for partner referrals and gives partner managers confidence their leads reach the sales team.",
+          "requirement_ids": [
+            "FR-003"
+          ]
+        },
+        {
+          "id": "US-004",
+          "role": "sales director",
+          "want": "to have each captured lead automatically classified as standard or strategic based on the employee-count threshold",
+          "so_that": "leads are routed appropriately, either for immediate assignment or for my personal review of high-value accounts",
+          "priority": "Must Have",
+          "business_value": "Enables the agreed dual assignment process to function correctly, balancing speed for most leads with oversight for strategic accounts.",
+          "requirement_ids": [
+            "FR-005"
+          ]
+        },
+        {
+          "id": "US-005",
+          "role": "sales representative",
+          "want": "to have standard, non-strategic leads automatically assigned to me within five minutes of capture",
+          "so_that": "I can act quickly and avoid losing deals to competitors due to assignment delay",
+          "priority": "Must Have",
+          "business_value": "Directly fulfills the sales team's requirement for near-immediate assignment, improving response time and deal conversion likelihood.",
+          "requirement_ids": [
+            "FR-006"
+          ]
+        },
+        {
+          "id": "US-006",
+          "role": "sales director",
+          "want": "to review and approve strategic account leads before they are assigned, with an automatic fallback assignment if I have not acted within 4 business hours, and assurance that no lead is ever assigned more than once",
+          "so_that": "I retain personal oversight of high-value accounts while ensuring these leads are never delayed indefinitely or double-assigned",
+          "priority": "Must Have",
+          "business_value": "Preserves director oversight of strategic accounts while protecting pipeline responsiveness and preventing conflicting assignments that could confuse or duplicate rep effort.",
+          "requirement_ids": [
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-010"
+          ]
+        },
+        {
+          "id": "US-007",
+          "role": "sales representative",
+          "want": "to be notified and have a follow-up reminder automatically created as soon as a lead is assigned to me",
+          "so_that": "I do not forget to contact new leads promptly and can act within the intended response window",
+          "priority": "Must Have",
+          "business_value": "Removes reliance on reps manually setting reminders, addressing a known cause of missed follow-up under the current spreadsheet and email process.",
+          "requirement_ids": [
+            "FR-011",
+            "FR-012"
+          ]
+        },
+        {
+          "id": "US-008",
+          "role": "sales manager",
+          "want": "to see a consolidated view of all leads and their current status across the pipeline",
+          "so_that": "I can monitor workload distribution across the sales team and identify leads at risk of stalling, which spreadsheets and inboxes could not show",
+          "priority": "Must Have",
+          "business_value": "Provides pipeline visibility that is currently missing, enabling proactive management of rep workload and lead follow-up.",
+          "requirement_ids": [
+            "FR-013"
+          ]
+        },
+        {
+          "id": "US-009",
+          "role": "sales director",
+          "want": "to generate reports on lead conversion across sources and sales representatives",
+          "so_that": "I can evaluate which channels and reps are performing best to inform resourcing, coaching and campaign investment decisions",
+          "priority": "Must Have",
+          "business_value": "Supports data-driven sales performance management and campaign ROI evaluation, a stated reporting need of the business.",
+          "requirement_ids": [
+            "FR-014"
+          ]
+        },
+        {
+          "id": "US-010",
+          "role": "sales representative",
+          "want": "to be alerted when a potential duplicate lead is captured through more than one channel within a short period",
+          "so_that": "I avoid contacting the same prospect twice and pipeline conversion figures remain accurate",
+          "priority": "Should Have",
+          "business_value": "Reduces duplicate outreach that could harm the customer relationship and prevents split or inflated conversion reporting across sources.",
+          "requirement_ids": [
+            "FR-015"
+          ]
+        }
+      ]
+    },
+    "use_cases": {
+      "use_cases": [
+        {
+          "id": "UC-01",
+          "name": "Capture New Lead",
+          "primary_actor": "Lead source (Website Visitor, Sales Representative, or Partner Manager)",
+          "goal": "Get a new lead recorded as a single record in the system, regardless of which channel it came from, so it can be classified and routed for assignment.",
+          "preconditions": [
+            "The lead source has access to the applicable capture method (public website form, internal lead entry screen, or partner submission screen)."
+          ],
+          "main_flow": [
+            "Website visitor completes and submits the website contact form.",
+            "System captures the submitted information into a new lead record.",
+            "System validates that the required contact fields (such as name and email or phone) are present.",
+            "System evaluates the lead against the strategic account criterion (more than 500 employees).",
+            "System classifies the lead as standard or strategic.",
+            "System routes the lead to auto-assignment (if standard) or to the sales director's review queue (if strategic).",
+            "System confirms successful capture to the website visitor."
+          ],
+          "alternative_flows": [
+            {
+              "name": "1a. Sales Representative enters a trade show lead",
+              "steps": [
+                "Sales representative opens the lead entry screen.",
+                "Sales representative manually enters the lead's contact information collected at the trade show.",
+                "Sales representative submits the lead.",
+                "System proceeds with validation as in main flow step 3."
+              ]
+            },
+            {
+              "name": "1b. Partner Manager submits a partner referral lead",
+              "steps": [
+                "Partner manager opens the partner referral submission screen.",
+                "Partner manager enters the referred lead's information.",
+                "Partner manager submits the lead.",
+                "System proceeds with validation as in main flow step 3."
+              ]
+            }
+          ],
+          "exceptions": [
+            {
+              "name": "3a. Required contact fields are missing",
+              "steps": [
+                "System detects that required contact fields are missing from the submission.",
+                "System rejects the submission and displays an explanatory error.",
+                "Lead source corrects the missing information and resubmits."
+              ]
+            },
+            {
+              "name": "4a. Potential duplicate lead detected",
+              "steps": [
+                "System detects a matching contact or company already captured through another channel within a short period.",
+                "System flags the new lead record as a potential duplicate.",
+                "System proceeds with classification and routing while marking the record for review."
+              ]
+            }
+          ],
+          "postconditions": [
+            "A new lead record exists in the system with validated contact information.",
+            "The lead has been classified as standard or strategic.",
+            "The lead is queued for either automatic assignment or director review."
+          ],
+          "requirement_ids": [
+            "FR-001",
+            "FR-002",
+            "FR-003",
+            "FR-004",
+            "FR-005",
+            "FR-015"
+          ]
+        },
+        {
+          "id": "UC-02",
+          "name": "Auto-Assign Standard Lead and Notify Representative",
+          "primary_actor": "System (automated assignment process)",
+          "goal": "Assign a standard (non-strategic) lead to a sales representative within five minutes of capture and ensure follow-up is scheduled.",
+          "preconditions": [
+            "A lead has been captured and classified as standard."
+          ],
+          "main_flow": [
+            "System detects a newly captured lead classified as standard.",
+            "System selects an available sales representative according to assignment rules.",
+            "System assigns the lead to the selected sales representative within five minutes of capture.",
+            "System creates a follow-up reminder for the sales representative.",
+            "System notifies the sales representative that a new lead has been assigned.",
+            "Sales representative reviews the assigned lead's details."
+          ],
+          "alternative_flows": [],
+          "exceptions": [],
+          "postconditions": [
+            "The standard lead is assigned to a sales representative.",
+            "A follow-up reminder exists for the assigned representative.",
+            "The representative has been notified of the new assignment."
+          ],
+          "requirement_ids": [
+            "FR-006",
+            "FR-011",
+            "FR-012"
+          ]
+        },
+        {
+          "id": "UC-03",
+          "name": "Review and Approve Strategic Account Lead",
+          "primary_actor": "Sales Director",
+          "goal": "Personally review and approve leads from strategic accounts before they are assigned to a sales representative.",
+          "preconditions": [
+            "A lead has been captured and classified as strategic (more than 500 employees).",
+            "The lead has been routed to the sales director's review queue."
+          ],
+          "main_flow": [
+            "System routes the strategic lead to the sales director's review queue.",
+            "Sales director reviews the lead's details.",
+            "Sales director selects a sales representative and approves the lead for assignment.",
+            "System assigns the lead to the selected sales representative.",
+            "System creates a follow-up reminder for the assigned representative.",
+            "System notifies the sales representative that a new lead has been assigned."
+          ],
+          "alternative_flows": [],
+          "exceptions": [
+            {
+              "name": "2a. Sales director does not act within 4 business hours",
+              "steps": [
+                "The 4-business-hour review window elapses without director action.",
+                "System automatically assigns the lead to a sales representative.",
+                "System creates a follow-up reminder for the assigned representative.",
+                "System notifies the sales representative that a new lead has been assigned."
+              ]
+            },
+            {
+              "name": "3a. Director approval and automatic fallback assignment occur concurrently",
+              "steps": [
+                "Sales director submits approval at nearly the same time the 4-business-hour window elapses.",
+                "System detects that both the manual approval and the automatic fallback are attempting to assign the lead.",
+                "System honors whichever assignment action completes first and disregards the other.",
+                "System prevents the lead from being assigned more than once."
+              ]
+            }
+          ],
+          "postconditions": [
+            "The strategic lead has been assigned to exactly one sales representative, either by director approval or automatic fallback.",
+            "A follow-up reminder exists for the assigned representative."
+          ],
+          "requirement_ids": [
+            "FR-007",
+            "FR-008",
+            "FR-009",
+            "FR-010",
+            "FR-011",
+            "FR-012"
+          ]
+        },
+        {
+          "id": "UC-04",
+          "name": "View Pipeline and Generate Conversion Reports",
+          "primary_actor": "Sales Director",
+          "goal": "View a consolidated view of the lead pipeline and generate conversion reports across sources and sales representatives.",
+          "preconditions": [
+            "The sales director has access to the reporting view.",
+            "Leads exist in the system."
+          ],
+          "main_flow": [
+            "Sales director opens the pipeline view.",
+            "System displays a consolidated list of all leads and their current status.",
+            "Sales director requests a conversion report, optionally filtered by source or sales representative.",
+            "System generates the conversion report based on the selected filters.",
+            "Sales director reviews the report to assess pipeline and sales performance."
+          ],
+          "alternative_flows": [
+            {
+              "name": "3a. Sales director requests a report without filters",
+              "steps": [
+                "Sales director requests a conversion report covering all sources and representatives.",
+                "System generates the report across the entire pipeline."
+              ]
+            }
+          ],
+          "exceptions": [],
+          "postconditions": [
+            "The sales director has current visibility into pipeline status and conversion performance."
+          ],
+          "requirement_ids": [
+            "FR-013",
+            "FR-014"
+          ]
+        }
+      ]
+    },
+    "criteria": {
+      "criteria": [
+        {
+          "id": "AC-001",
+          "story_id": "US-001",
+          "title": "Website form lead captured successfully",
+          "scenario_type": "Positive",
+          "given": "a visitor completes the website contact form with all required contact fields",
+          "when": "the form is submitted",
+          "then": "a new lead record is created in the central lead management system with the submitted information, without requiring any manual re-entry"
+        },
+        {
+          "id": "AC-002",
+          "story_id": "US-001",
+          "title": "Website form submitted with missing required fields",
+          "scenario_type": "Negative",
+          "given": "a visitor completes the website contact form but omits a required contact field such as email or phone",
+          "when": "the form is submitted",
+          "then": "the system does not create an incomplete lead record and an explanatory error indicates the missing information is required"
+        },
+        {
+          "id": "AC-003",
+          "story_id": "US-001",
+          "title": "Same contact submitted through website and another channel",
+          "scenario_type": "Edge Case",
+          "given": "a contact or company already exists as a lead captured through another channel within a short period",
+          "when": "a matching lead is submitted through the website contact form",
+          "then": "the system flags the new website submission as a potential duplicate for review rather than silently creating a separate untracked record"
+        },
+        {
+          "id": "AC-004",
+          "story_id": "US-002",
+          "title": "Trade show lead entered with all required fields",
+          "scenario_type": "Positive",
+          "given": "a sales representative is entering a lead collected at a trade show and provides all required contact fields",
+          "when": "the representative saves the lead record",
+          "then": "the lead record is saved into the central lead management system and becomes available for assignment and follow-up"
+        },
+        {
+          "id": "AC-005",
+          "story_id": "US-002",
+          "title": "Trade show lead missing required contact information",
+          "scenario_type": "Negative",
+          "given": "a sales representative is entering a trade show lead and leaves a required contact field, such as email or phone, blank",
+          "when": "the representative attempts to save the lead record",
+          "then": "the system prevents the record from being saved and displays an explanatory error identifying the missing required field"
+        },
+        {
+          "id": "AC-006",
+          "story_id": "US-002",
+          "title": "Lead saved with an alternative required contact method",
+          "scenario_type": "Edge Case",
+          "given": "a sales representative enters a trade show lead with a name and a phone number but no email address",
+          "when": "the representative saves the lead record",
+          "then": "the system accepts and saves the lead record because the minimum required contact information has been satisfied"
+        },
+        {
+          "id": "AC-007",
+          "story_id": "US-002",
+          "title": "Batch of trade show leads contains malformed or duplicate entries",
+          "scenario_type": "Edge Case",
+          "given": "a sales representative is entering multiple trade show leads and one or more entries are incomplete, malformed, or duplicate against existing records",
+          "when": "the representative attempts to save the batch of leads",
+          "then": "the system saves the valid entries, rejects the invalid or duplicate entries individually, and identifies which entries require correction"
+        },
+        {
+          "id": "AC-008",
+          "story_id": "US-003",
+          "title": "Successful partner referral submission",
+          "scenario_type": "Positive",
+          "given": "a partner manager is logged in and has a complete set of contact details for a referred lead",
+          "when": "the partner manager submits the lead information directly into the system",
+          "then": "the lead record is created and visible in the system for tracking, without any email exchange required"
+        },
+        {
+          "id": "AC-009",
+          "story_id": "US-003",
+          "title": "Partner referral missing required contact information",
+          "scenario_type": "Negative",
+          "given": "a partner manager is entering a referral lead but has not provided a required contact field such as email or phone",
+          "when": "the partner manager attempts to submit the lead",
+          "then": "the system rejects the submission and displays an error explaining that required contact information is missing"
+        },
+        {
+          "id": "AC-010",
+          "story_id": "US-003",
+          "title": "Partner referral matches an existing lead from another channel",
+          "scenario_type": "Edge Case",
+          "given": "a contact or company already has a lead record captured through another channel such as the website",
+          "when": "a partner manager submits a referral for the same contact or company",
+          "then": "the system flags the new submission as a potential duplicate so it can be reviewed rather than treated as an entirely separate lead"
+        },
+        {
+          "id": "AC-011",
+          "story_id": "US-004",
+          "title": "Lead automatically classified as strategic",
+          "scenario_type": "Positive",
+          "given": "a lead has been captured with an employee count greater than 500",
+          "when": "the system evaluates the lead against the strategic account criterion",
+          "then": "the lead is classified as strategic and routed to the sales director for review instead of being auto-assigned"
+        },
+        {
+          "id": "AC-012",
+          "story_id": "US-004",
+          "title": "Lead automatically classified as standard",
+          "scenario_type": "Positive",
+          "given": "a lead has been captured with an employee count of 500 or fewer",
+          "when": "the system evaluates the lead against the strategic account criterion",
+          "then": "the lead is classified as standard and proceeds to automatic assignment rather than director review"
+        },
+        {
+          "id": "AC-013",
+          "story_id": "US-004",
+          "title": "Lead captured without employee count data",
+          "scenario_type": "Edge Case",
+          "given": "a lead has been captured but no employee count value is available for the associated company",
+          "when": "the system attempts to classify the lead as standard or strategic",
+          "then": "the system records that classification could not be determined and the lead is identifiable for follow-up rather than being silently treated as standard"
+        },
+        {
+          "id": "AC-014",
+          "story_id": "US-004",
+          "title": "Employee count changes after initial classification",
+          "scenario_type": "Edge Case",
+          "given": "a lead was classified based on an employee count that is later updated, changing whether it exceeds the strategic threshold",
+          "when": "the updated employee count becomes available in the system",
+          "then": "the discrepancy between the original classification and the updated criterion is visible so a sales director can review whether the lead's routing was appropriate"
+        },
+        {
+          "id": "AC-015",
+          "story_id": "US-005",
+          "title": "Standard lead auto-assigned within five minutes",
+          "scenario_type": "Positive",
+          "given": "a new lead has been captured and classified as a standard (non-strategic) account",
+          "when": "the lead capture and classification are completed",
+          "then": "the system automatically assigns the lead to a sales representative within five minutes of capture and creates a follow-up reminder for that representative"
+        },
+        {
+          "id": "AC-016",
+          "story_id": "US-005",
+          "title": "Lead submission missing required contact field",
+          "scenario_type": "Negative",
+          "given": "a lead is being submitted through the website form, a trade show entry, or a partner referral without a required contact field such as name, email, or phone number",
+          "when": "a user attempts to save the lead record",
+          "then": "the system rejects the submission, displays an explanatory error identifying the missing field, and does not create an assignable lead record"
+        },
+        {
+          "id": "AC-017",
+          "story_id": "US-005",
+          "title": "Duplicate lead captured through multiple channels",
+          "scenario_type": "Edge Case",
+          "given": "a lead with a matching contact or company has already been captured through one channel and is then submitted again through another channel within a short period",
+          "when": "the second matching lead record is captured",
+          "then": "the system flags the new record as a potential duplicate for review in addition to proceeding with standard auto-assignment processing"
+        },
+        {
+          "id": "AC-018",
+          "story_id": "US-006",
+          "title": "Director approves strategic lead within review window",
+          "scenario_type": "Positive",
+          "given": "a lead has been classified as a strategic account (over 500 employees) and routed to the sales director for review",
+          "when": "the sales director approves the lead and selects a sales representative within the 4-business-hour review window",
+          "then": "the lead is assigned to the selected representative, a follow-up reminder is created, and the lead is recorded as assigned exactly once"
+        },
+        {
+          "id": "AC-019",
+          "story_id": "US-006",
+          "title": "Automatic fallback assignment after director inaction",
+          "scenario_type": "Edge Case",
+          "given": "a strategic account lead has been routed to the sales director for review and 4 business hours have elapsed since routing without director approval",
+          "when": "the 4-business-hour review window expires",
+          "then": "the system automatically assigns the lead to a sales representative and records the assignment as originating from the fallback rule"
+        },
+        {
+          "id": "AC-020",
+          "story_id": "US-006",
+          "title": "Director approval and fallback trigger occur near-simultaneously",
+          "scenario_type": "Edge Case",
+          "given": "a strategic account lead is nearing the end of its 4-business-hour review window and the sales director submits an approval at approximately the same time the automatic fallback assignment would trigger",
+          "when": "both the director's approval action and the fallback assignment process attempt to assign the lead",
+          "then": "the system assigns the lead to only one representative based on whichever action completes first, and prevents the other action from creating a conflicting or duplicate assignment"
+        },
+        {
+          "id": "AC-021",
+          "story_id": "US-006",
+          "title": "Review window spans non-business hours",
+          "scenario_type": "Edge Case",
+          "given": "a strategic account lead is routed to the sales director for review near the end of business hours such that the 4-business-hour window would otherwise extend into evening, overnight, weekend, or holiday time",
+          "when": "the system calculates the remaining time in the review window",
+          "then": "only business hours are counted toward the 4-hour window, so the deadline for the automatic fallback assignment is extended to account for the intervening non-business time"
+        },
+        {
+          "id": "AC-022",
+          "story_id": "US-007",
+          "title": "Automatic reminder and notification for standard lead assignment",
+          "scenario_type": "Positive",
+          "given": "a standard (non-strategic) lead has been captured and is eligible for automatic assignment",
+          "when": "the system automatically assigns the lead to a sales representative",
+          "then": "a follow-up reminder is created for that representative and the representative receives a notification that the lead has been assigned"
+        },
+        {
+          "id": "AC-023",
+          "story_id": "US-007",
+          "title": "Reminder and notification for director-approved strategic lead",
+          "scenario_type": "Positive",
+          "given": "a strategic account lead has been routed to the sales director for review",
+          "when": "the sales director approves the lead and assigns it to a sales representative",
+          "then": "a follow-up reminder is created for that representative and the representative receives a notification that the lead has been assigned"
+        },
+        {
+          "id": "AC-024",
+          "story_id": "US-007",
+          "title": "Reminder and notification when strategic lead auto-assigns after review window",
+          "scenario_type": "Edge Case",
+          "given": "a strategic account lead has been routed to the sales director and the 4-business-hour review window has elapsed without a decision",
+          "when": "the system automatically assigns the lead to a sales representative",
+          "then": "a follow-up reminder is created for that representative and the representative receives a notification that the lead has been assigned"
+        },
+        {
+          "id": "AC-025",
+          "story_id": "US-007",
+          "title": "Reminder still created when assigned representative is unavailable",
+          "scenario_type": "Edge Case",
+          "given": "a lead is assigned to a sales representative who is on leave or otherwise unavailable at the time of assignment",
+          "when": "the assignment is completed",
+          "then": "the follow-up reminder and notification are still created and recorded against that representative for action when they become available"
+        },
+        {
+          "id": "AC-026",
+          "story_id": "US-008",
+          "title": "Consolidated pipeline view for sales manager",
+          "scenario_type": "Positive",
+          "given": "leads have been captured from the website, trade shows and partner referrals and are at various stages of assignment or follow-up",
+          "when": "the sales manager opens the consolidated pipeline view",
+          "then": "the manager sees all leads with their current status, assigned representative and source in a single view"
+        },
+        {
+          "id": "AC-027",
+          "story_id": "US-008",
+          "title": "Leads at risk of stalling are identifiable",
+          "scenario_type": "Positive",
+          "given": "one or more leads have remained without follow-up action or assignment for longer than expected",
+          "when": "the sales manager views the consolidated pipeline",
+          "then": "those leads are visibly distinguishable so the manager can identify them as at risk of stalling"
+        },
+        {
+          "id": "AC-028",
+          "story_id": "US-008",
+          "title": "Unauthorized user denied access to consolidated pipeline view",
+          "scenario_type": "Negative",
+          "given": "a user without sales manager or sales director role attempts to access the consolidated pipeline view",
+          "when": "the user requests the view",
+          "then": "the system denies access and the user does not see the consolidated lead data"
+        },
+        {
+          "id": "AC-029",
+          "story_id": "US-008",
+          "title": "Consolidated view with no leads in the pipeline",
+          "scenario_type": "Edge Case",
+          "given": "no leads have yet been captured in the system",
+          "when": "the sales manager opens the consolidated pipeline view",
+          "then": "the view displays an empty pipeline state without errors"
+        },
+        {
+          "id": "AC-030",
+          "story_id": "US-009",
+          "title": "Generate conversion report across sources and representatives",
+          "scenario_type": "Positive",
+          "given": "the sales director is logged in and lead records with assignment and outcome data exist in the system",
+          "when": "the sales director requests a lead conversion report broken down by source and by sales representative",
+          "then": "the system displays conversion figures grouped by lead source and by sales representative that reflect the underlying lead records"
+        },
+        {
+          "id": "AC-031",
+          "story_id": "US-009",
+          "title": "Report requested for a period with no leads",
+          "scenario_type": "Edge Case",
+          "given": "the sales director selects a reporting period or filter for which no leads were captured",
+          "when": "the sales director generates the conversion report",
+          "then": "the system displays the report with an indication that no lead data is available for the selected criteria, rather than an error"
+        },
+        {
+          "id": "AC-032",
+          "story_id": "US-009",
+          "title": "Non-director role attempts to access conversion reports",
+          "scenario_type": "Negative",
+          "given": "a user without sales director or authorized reporting permissions is logged in",
+          "when": "that user attempts to access the lead conversion report",
+          "then": "the system denies access and does not display the report data"
+        },
+        {
+          "id": "AC-033",
+          "story_id": "US-009",
+          "title": "Report includes leads not yet resolved",
+          "scenario_type": "Edge Case",
+          "given": "some leads in the system are still pending assignment or director approval and have not reached a final outcome",
+          "when": "the sales director generates the conversion report covering those leads",
+          "then": "the report distinguishes leads with a final conversion outcome from leads that are still in progress, without treating unresolved leads as converted or lost"
+        },
+        {
+          "id": "AC-034",
+          "story_id": "US-010",
+          "title": "Duplicate lead captured through two channels is flagged",
+          "scenario_type": "Positive",
+          "given": "a lead matching the same contact or company has been captured through one channel and is then captured again through a different channel within a short period",
+          "when": "the second lead record is captured",
+          "then": "the system flags the new record as a potential duplicate and alerts the relevant sales representative"
+        },
+        {
+          "id": "AC-035",
+          "story_id": "US-010",
+          "title": "Single-channel lead is not flagged as duplicate",
+          "scenario_type": "Negative",
+          "given": "a lead is captured once through a single channel and no matching contact or company has been previously captured",
+          "when": "the lead record is saved",
+          "then": "the system does not raise a duplicate alert for that lead"
+        },
+        {
+          "id": "AC-036",
+          "story_id": "US-010",
+          "title": "Duplicate detected after both leads already assigned to different representatives",
+          "scenario_type": "Edge Case",
+          "given": "two lead records for the same contact or company captured through different channels have already been assigned to two different sales representatives",
+          "when": "the system identifies the potential duplicate after both assignments have occurred",
+          "then": "the system alerts both affected sales representatives that a potential duplicate exists so the conflict can be resolved"
+        },
+        {
+          "id": "AC-037",
+          "story_id": "US-010",
+          "title": "Partial match between leads is treated as uncertain duplicate",
+          "scenario_type": "Edge Case",
+          "given": "two lead records share some matching details, such as the same company but a different individual contact, captured through different channels",
+          "when": "the system evaluates the records for duplication",
+          "then": "the system flags the records as a potential duplicate for the sales representative to review and confirm, rather than automatically merging or discarding either record"
+        }
+      ]
+    },
+    "test_cases": {
+      "test_cases": [
+        {
+          "id": "TC-001",
+          "requirement_ids": [
+            "FR-001"
+          ],
+          "criterion_ids": [
+            "AC-001"
+          ],
+          "scenario": "Website contact form submission with all required fields creates a new lead record automatically",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Website contact form is live and connected to the lead management system",
+            "No existing lead record matches the test contact 'Jane Doe, jane.doe@example.com'"
+          ],
+          "steps": [
+            "Navigate to the website contact form",
+            "Enter name 'Jane Doe', email 'jane.doe@example.com', phone '555-0100', and company 'Acme Corp'",
+            "Submit the form"
+          ],
+          "expected_result": "A new lead record for Jane Doe is created in the central lead management system with all submitted details, with no manual re-entry required",
+          "priority": "High"
+        },
+        {
+          "id": "TC-002",
+          "requirement_ids": [
+            "FR-001",
+            "FR-004"
+          ],
+          "criterion_ids": [
+            "AC-002"
+          ],
+          "scenario": "Website contact form submission missing a required contact field is rejected with an explanatory error",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "Website contact form is live and connected to the lead management system"
+          ],
+          "steps": [
+            "Navigate to the website contact form",
+            "Enter name 'John Smith' and company 'Beta Inc' but leave both email and phone fields blank",
+            "Submit the form"
+          ],
+          "expected_result": "No lead record is created, and the form displays an explanatory error indicating that at least one contact method (email or phone) is required",
+          "priority": "High"
+        },
+        {
+          "id": "TC-003",
+          "requirement_ids": [
+            "FR-001"
+          ],
+          "criterion_ids": [
+            "AC-003"
+          ],
+          "scenario": "A website form submission matching an existing lead captured through another channel is flagged as a potential duplicate",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "A lead record exists for contact 'Maria Lopez, maria.lopez@example.com' at 'Globex LLC', captured via trade show entry within the last hour"
+          ],
+          "steps": [
+            "Navigate to the website contact form",
+            "Enter name 'Maria Lopez', email 'maria.lopez@example.com', and company 'Globex LLC'",
+            "Submit the form"
+          ],
+          "expected_result": "The system flags the new website submission as a potential duplicate of the existing lead record for review, rather than silently creating a separate untracked lead",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-004",
+          "requirement_ids": [
+            "FR-002",
+            "FR-004"
+          ],
+          "criterion_ids": [
+            "AC-004"
+          ],
+          "scenario": "Sales representative manually enters a trade show lead with all required contact fields",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Sales representative is logged in with access to manual lead entry",
+            "No existing lead record matches the test contact 'Tom Reed, tom.reed@example.com'"
+          ],
+          "steps": [
+            "Open the manual lead entry screen",
+            "Enter name 'Tom Reed', email 'tom.reed@example.com', phone '555-0102', and company 'Northwind Traders'",
+            "Save the lead record"
+          ],
+          "expected_result": "The lead record is saved successfully into the central lead management system and becomes available for assignment and follow-up",
+          "priority": "High"
+        },
+        {
+          "id": "TC-005",
+          "requirement_ids": [
+            "FR-002",
+            "FR-004"
+          ],
+          "criterion_ids": [
+            "AC-005"
+          ],
+          "scenario": "Sales representative attempts to save a trade show lead with no email or phone provided",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "Sales representative is logged in with access to manual lead entry"
+          ],
+          "steps": [
+            "Open the manual lead entry screen",
+            "Enter name 'Alice Brown' and company 'Contoso Ltd', leaving both email and phone fields blank",
+            "Attempt to save the lead record"
+          ],
+          "expected_result": "The system prevents the record from being saved and displays an explanatory error identifying that a required contact field (email or phone) is missing",
+          "priority": "High"
+        },
+        {
+          "id": "TC-006",
+          "requirement_ids": [
+            "FR-002",
+            "FR-004"
+          ],
+          "criterion_ids": [
+            "AC-006"
+          ],
+          "scenario": "Sales representative saves a trade show lead with a phone number but no email address",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Sales representative is logged in with access to manual lead entry"
+          ],
+          "steps": [
+            "Open the manual lead entry screen",
+            "Enter name 'Carlos Diaz', phone '555-0110', and company 'Initech', leaving the email field blank",
+            "Save the lead record"
+          ],
+          "expected_result": "The system accepts and saves the lead record because the minimum required contact information (name plus phone) has been satisfied",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-007",
+          "requirement_ids": [
+            "FR-002",
+            "FR-004"
+          ],
+          "criterion_ids": [
+            "AC-007"
+          ],
+          "scenario": "Sales representative saves a batch of trade show leads containing a mix of valid, incomplete, malformed, and duplicate entries",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Sales representative is logged in with access to manual lead entry",
+            "An existing lead record already exists for 'Dana White, dana.white@example.com' at 'Umbrella Corp'"
+          ],
+          "steps": [
+            "Open the manual lead entry screen for batch entry",
+            "Enter Lead 1: name 'Eve Park', email 'eve.park@example.com', phone '555-0120' (valid)",
+            "Enter Lead 2: name 'Frank Cole' with no email and no phone (incomplete)",
+            "Enter Lead 3: name 'Grace Kim', email 'not-an-email' (malformed email)",
+            "Enter Lead 4: name 'Dana White', email 'dana.white@example.com' (duplicate of existing lead)",
+            "Attempt to save the batch"
+          ],
+          "expected_result": "The system saves Lead 1 as a new valid lead record, rejects Lead 2 for missing required contact information, rejects Lead 3 for malformed email format, flags Lead 4 as a duplicate, and clearly identifies which entries require correction",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-008",
+          "requirement_ids": [
+            "FR-003"
+          ],
+          "criterion_ids": [
+            "AC-008"
+          ],
+          "scenario": "Partner manager successfully submits a complete referral lead directly into the system",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Partner manager user 'pm.jones' is logged in with an active Partner Manager role",
+            "No existing lead record exists for contact 'Dana Lee' at 'Acme Corp'"
+          ],
+          "steps": [
+            "Log in as partner manager pm.jones",
+            "Navigate to the 'New Referral Lead' entry form",
+            "Enter contact name 'Dana Lee', email 'dana.lee@acme.example', company 'Acme Corp', and phone '555-0100'",
+            "Submit the lead form"
+          ],
+          "expected_result": "A new lead record for Dana Lee at Acme Corp is created and immediately visible in the system's lead list, with no email exchange required to register it",
+          "priority": "High"
+        },
+        {
+          "id": "TC-009",
+          "requirement_ids": [
+            "FR-003"
+          ],
+          "criterion_ids": [
+            "AC-009"
+          ],
+          "scenario": "Partner manager attempts to submit a referral lead missing required contact information",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "Partner manager user 'pm.jones' is logged in with an active Partner Manager role"
+          ],
+          "steps": [
+            "Log in as partner manager pm.jones",
+            "Navigate to the 'New Referral Lead' entry form",
+            "Enter contact name 'Sam Rivera' and company 'Globex Inc' but leave both email and phone fields blank",
+            "Attempt to submit the lead form"
+          ],
+          "expected_result": "The system rejects the submission and displays an error message stating that required contact information (email or phone) is missing; no lead record is created",
+          "priority": "High"
+        },
+        {
+          "id": "TC-010",
+          "requirement_ids": [
+            "FR-003"
+          ],
+          "criterion_ids": [
+            "AC-010"
+          ],
+          "scenario": "Partner manager submits a referral for a contact that already exists as a website-captured lead",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "A lead record already exists for contact 'Morgan Blake' at 'Initech LLC', captured via the website contact form",
+            "Partner manager user 'pm.jones' is logged in"
+          ],
+          "steps": [
+            "Log in as partner manager pm.jones",
+            "Navigate to the 'New Referral Lead' entry form",
+            "Enter contact name 'Morgan Blake', company 'Initech LLC', and matching email address used in the existing website lead",
+            "Submit the lead form"
+          ],
+          "expected_result": "The new referral submission is created but flagged as a potential duplicate of the existing website-sourced lead, making it identifiable for review rather than treated as a fully separate, unrelated lead",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-011",
+          "requirement_ids": [
+            "FR-005"
+          ],
+          "criterion_ids": [
+            "AC-011"
+          ],
+          "scenario": "System classifies a captured lead with employee count over 500 as strategic and routes it for director review",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "A lead record for 'Big Enterprise Co' has been captured with an employee count value of 750"
+          ],
+          "steps": [
+            "Trigger or wait for the system's automatic classification evaluation on the lead for Big Enterprise Co",
+            "Open the lead record to check its classification and routing status"
+          ],
+          "expected_result": "The lead is classified as 'Strategic' and its status shows it routed to the sales director's review queue rather than being auto-assigned to a sales representative",
+          "priority": "High"
+        },
+        {
+          "id": "TC-012",
+          "requirement_ids": [
+            "FR-005"
+          ],
+          "criterion_ids": [
+            "AC-012"
+          ],
+          "scenario": "System classifies a captured lead with employee count of 500 or fewer as standard and proceeds to auto-assignment",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "A lead record for 'Small Biz Ltd' has been captured with an employee count value of 45"
+          ],
+          "steps": [
+            "Trigger or wait for the system's automatic classification evaluation on the lead for Small Biz Ltd",
+            "Open the lead record to check its classification and routing status"
+          ],
+          "expected_result": "The lead is classified as 'Standard' and proceeds toward automatic assignment to a sales representative rather than being routed to the sales director",
+          "priority": "High"
+        },
+        {
+          "id": "TC-013",
+          "requirement_ids": [
+            "FR-005"
+          ],
+          "criterion_ids": [
+            "AC-013"
+          ],
+          "scenario": "System attempts to classify a lead for which no employee count data is available",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "A lead record for 'Unknown Size Co' has been captured with no employee count value populated"
+          ],
+          "steps": [
+            "Trigger or wait for the system's automatic classification evaluation on the lead for Unknown Size Co",
+            "Open the lead record to check its classification status"
+          ],
+          "expected_result": "The lead's classification is recorded as 'Undetermined' (or equivalent), the lead is flagged/identifiable for follow-up, and it is not silently defaulted to 'Standard' classification",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-014",
+          "requirement_ids": [
+            "FR-005"
+          ],
+          "criterion_ids": [
+            "AC-014"
+          ],
+          "scenario": "Employee count is updated after a lead was already classified, crossing the strategic threshold",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "A lead for 'Growing Startup Inc' was captured and classified as 'Standard' based on an initial employee count of 300",
+            "The lead has since been auto-assigned to a sales representative"
+          ],
+          "steps": [
+            "Update the employee count value for Growing Startup Inc's associated company record to 600",
+            "Open the lead record to review its classification history and current status"
+          ],
+          "expected_result": "The system displays a visible discrepancy between the original 'Standard' classification and the updated employee count exceeding the strategic threshold, flagging it so a sales director can review whether the routing was appropriate",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-015",
+          "requirement_ids": [
+            "FR-006"
+          ],
+          "criterion_ids": [
+            "AC-015"
+          ],
+          "scenario": "Verify a standard (non-strategic) lead is automatically assigned to a sales representative within five minutes and a follow-up reminder is created.",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead LEAD-2001 is captured via the website contact form for a company with 50 employees (standard, non-strategic)",
+            "At least one sales representative is available in the assignment pool"
+          ],
+          "steps": [
+            "Capture lead LEAD-2001 with complete contact details and company size of 50 employees.",
+            "Confirm the system classifies the lead as standard (non-strategic).",
+            "Monitor the lead's assignment status for up to five minutes after capture.",
+            "Check the assigned representative's task list for a corresponding follow-up reminder."
+          ],
+          "expected_result": "Lead LEAD-2001 is automatically assigned to a sales representative within 5 minutes of capture, and a follow-up reminder is created for that representative.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-016",
+          "requirement_ids": [
+            "FR-006"
+          ],
+          "criterion_ids": [
+            "AC-016"
+          ],
+          "scenario": "Verify lead submissions missing a required contact field are rejected across all capture channels.",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "Tester has access to submit leads via the website form, manual trade show entry, and partner referral submission"
+          ],
+          "steps": [
+            "Attempt to submit a lead via the website contact form omitting the email field.",
+            "Attempt to submit a lead via manual trade show entry omitting the name field.",
+            "Attempt to submit a lead via partner referral submission omitting both email and phone.",
+            "Observe the system's response for each of the three attempts."
+          ],
+          "expected_result": "Each submission is rejected with an explanatory error identifying the specific missing field, and no assignable lead record is created for any of the three attempts.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-017",
+          "requirement_ids": [
+            "FR-006"
+          ],
+          "criterion_ids": [
+            "AC-017"
+          ],
+          "scenario": "Verify a lead captured through a second channel with a matching contact or company is flagged as a potential duplicate while still proceeding through standard auto-assignment.",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Lead LEAD-3001 for contact Jane Doe at Acme Corp (fewer than 500 employees) was captured via the website form 10 minutes earlier"
+          ],
+          "steps": [
+            "Submit a second lead record for Jane Doe at Acme Corp via partner referral within a short period after the first capture.",
+            "Observe whether the system flags the new record as a potential duplicate.",
+            "Confirm the new lead record still proceeds through standard auto-assignment processing."
+          ],
+          "expected_result": "The second lead record is flagged as a potential duplicate for review, and it is still automatically assigned to a sales representative per standard processing.",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-018",
+          "requirement_ids": [
+            "FR-007",
+            "FR-008"
+          ],
+          "criterion_ids": [
+            "AC-018"
+          ],
+          "scenario": "Verify the sales director can review, approve, and assign a strategic account lead within the 4-business-hour review window.",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead LEAD-4001 for a company with 800 employees (strategic account) has been routed to the sales director for review",
+            "The 4-business-hour review window has not yet elapsed"
+          ],
+          "steps": [
+            "Log in as the sales director and open the pending review queue.",
+            "Select lead LEAD-4001, approve it, and choose sales representative REP-Chen for assignment.",
+            "Confirm the assignment completes within the 4-business-hour window.",
+            "Check REP-Chen's task list for a follow-up reminder.",
+            "Verify the lead's assignment history shows a single assignment record."
+          ],
+          "expected_result": "Lead LEAD-4001 is assigned to REP-Chen, a follow-up reminder is created for REP-Chen, and the lead is recorded as assigned exactly once.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-019",
+          "requirement_ids": [
+            "FR-007",
+            "FR-009"
+          ],
+          "criterion_ids": [
+            "AC-019"
+          ],
+          "scenario": "Verify a strategic account lead is automatically assigned to a sales representative if the sales director takes no action within the 4-business-hour review window.",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Lead LEAD-4002 for a company with 600 employees (strategic account) has been routed to the sales director for review",
+            "No director action has occurred as the 4-business-hour window nears expiry"
+          ],
+          "steps": [
+            "Allow the 4-business-hour review window for lead LEAD-4002 to fully elapse without director approval.",
+            "Monitor the lead's assignment status at the moment the window expires.",
+            "Inspect the resulting assignment record's origin field."
+          ],
+          "expected_result": "Lead LEAD-4002 is automatically assigned to a sales representative immediately after the 4-business-hour window expires, and the assignment record indicates it originated from the fallback rule.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-020",
+          "requirement_ids": [
+            "FR-009",
+            "FR-010"
+          ],
+          "criterion_ids": [
+            "AC-020"
+          ],
+          "scenario": "Verify only a single assignment results when director approval and the automatic fallback assignment are triggered at approximately the same time.",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Lead LEAD-4003 for a company with 1200 employees (strategic account) is nearing the end of its 4-business-hour review window",
+            "The sales director is actively viewing the pending review queue near the deadline"
+          ],
+          "steps": [
+            "Simulate the sales director submitting approval for lead LEAD-4003 with representative REP-Lopez at approximately the same moment the 4-business-hour window is set to expire.",
+            "Trigger the automatic fallback assignment process for lead LEAD-4003 concurrently with the approval action.",
+            "Inspect the lead's final assignment record and assigned representative field.",
+            "Check for any error or conflict log entries related to duplicate assignment attempts."
+          ],
+          "expected_result": "Lead LEAD-4003 is assigned to exactly one sales representative based on whichever action completed first, and the other action is prevented from creating a conflicting or duplicate assignment.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-021",
+          "requirement_ids": [
+            "FR-009"
+          ],
+          "criterion_ids": [
+            "AC-021"
+          ],
+          "scenario": "Verify the 4-business-hour review window calculation excludes non-business hours, extending the fallback deadline accordingly.",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Lead LEAD-4004 for a company with 700 employees (strategic account) is routed to the sales director for review 1 hour before the end of business hours on a business day",
+            "The following period includes non-business overnight hours before the next business day begins"
+          ],
+          "steps": [
+            "Route lead LEAD-4004 to the sales director for review 1 hour before business close.",
+            "Allow the clock to pass through the overnight non-business period into the next business day.",
+            "Monitor the system's calculated remaining review time and fallback deadline throughout this period.",
+            "Confirm the fallback assignment does not trigger during the non-business hours."
+          ],
+          "expected_result": "The system counts only business hours toward the 4-hour window, extending the fallback deadline to account for the intervening non-business time, and does not trigger the fallback assignment until the full 4 business hours have actually elapsed within business hours.",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-022",
+          "requirement_ids": [
+            "FR-011",
+            "FR-012"
+          ],
+          "criterion_ids": [
+            "AC-022"
+          ],
+          "scenario": "Standard lead auto-assignment triggers reminder and notification",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead LEAD-3001 has been captured via the website contact form",
+            "Lead LEAD-3001 is classified as standard (company size under 500 employees)",
+            "Sales representative Rep-Jane is active and eligible for auto-assignment"
+          ],
+          "steps": [
+            "Submit lead LEAD-3001 through the website contact form",
+            "Wait for the system to automatically assign the lead to Rep-Jane within the 5-minute window",
+            "Check Rep-Jane's follow-up reminders list",
+            "Check Rep-Jane's notifications"
+          ],
+          "expected_result": "A follow-up reminder for LEAD-3001 is created and assigned to Rep-Jane, and Rep-Jane receives a notification that the lead has been assigned to them.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-023",
+          "requirement_ids": [
+            "FR-011",
+            "FR-012"
+          ],
+          "criterion_ids": [
+            "AC-023"
+          ],
+          "scenario": "Director-approved strategic lead triggers reminder and notification",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead LEAD-3002 exists with company size over 500 employees and is classified as strategic",
+            "Lead LEAD-3002 has been routed to sales director Dana for review",
+            "Sales representative Rep-Mark is active"
+          ],
+          "steps": [
+            "Log in as sales director Dana",
+            "Open lead LEAD-3002 in the review queue",
+            "Approve the lead and assign it to Rep-Mark",
+            "Check Rep-Mark's follow-up reminders list",
+            "Check Rep-Mark's notifications"
+          ],
+          "expected_result": "A follow-up reminder for LEAD-3002 is created and assigned to Rep-Mark, and Rep-Mark receives a notification that the lead has been assigned to them.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-024",
+          "requirement_ids": [
+            "FR-011",
+            "FR-012"
+          ],
+          "criterion_ids": [
+            "AC-024"
+          ],
+          "scenario": "Strategic lead auto-assigns after 4-business-hour review window elapses without director action, still creating reminder and notification",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Lead LEAD-3003 exists with company size over 500 employees and is classified as strategic",
+            "Lead LEAD-3003 was routed to the sales director 4 business hours ago",
+            "No approval action has been recorded by the sales director for LEAD-3003"
+          ],
+          "steps": [
+            "Advance time (or wait) until the 4-business-hour review window for LEAD-3003 has fully elapsed",
+            "Observe the system automatically assign LEAD-3003 to an eligible sales representative",
+            "Check the assigned representative's follow-up reminders list",
+            "Check the assigned representative's notifications"
+          ],
+          "expected_result": "LEAD-3003 is automatically assigned to a sales representative once the 4-business-hour window elapses, a follow-up reminder is created for that representative, and the representative receives an assignment notification.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-025",
+          "requirement_ids": [
+            "FR-011",
+            "FR-012"
+          ],
+          "criterion_ids": [
+            "AC-025"
+          ],
+          "scenario": "Reminder and notification are still created when the assigned representative is unavailable (on leave)",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Lead LEAD-3004 is eligible for assignment",
+            "Sales representative Rep-Alex is marked as on leave / unavailable in the system",
+            "Rep-Alex is the eligible representative selected by the assignment logic"
+          ],
+          "steps": [
+            "Trigger assignment of LEAD-3004 to Rep-Alex (via auto-assignment or director approval)",
+            "Confirm the assignment is recorded against Rep-Alex despite their unavailable status",
+            "Check Rep-Alex's follow-up reminders list",
+            "Check Rep-Alex's notifications (e.g., pending/unread queue)"
+          ],
+          "expected_result": "The follow-up reminder and assignment notification for LEAD-3004 are created and recorded against Rep-Alex, available for action once Rep-Alex becomes available again.",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-026",
+          "requirement_ids": [
+            "FR-013"
+          ],
+          "criterion_ids": [
+            "AC-026"
+          ],
+          "scenario": "Sales manager views consolidated pipeline showing all leads with status, assigned rep and source",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead LEAD-4001 captured from the website, status Assigned, assigned to Rep-Jane",
+            "Lead LEAD-4002 captured at a trade show, status Pending Assignment",
+            "Lead LEAD-4003 captured via partner referral, status Assigned, assigned to Rep-Mark",
+            "User Manager-Sam has the sales manager role"
+          ],
+          "steps": [
+            "Log in as Manager-Sam",
+            "Open the consolidated pipeline view",
+            "Locate LEAD-4001, LEAD-4002 and LEAD-4003 in the view"
+          ],
+          "expected_result": "Manager-Sam sees all three leads in a single view, each showing its current status, assigned representative (where applicable) and originating source (website, trade show, partner referral).",
+          "priority": "High"
+        },
+        {
+          "id": "TC-027",
+          "requirement_ids": [
+            "FR-013"
+          ],
+          "criterion_ids": [
+            "AC-027"
+          ],
+          "scenario": "Leads that have remained without assignment or follow-up beyond the expected time are visibly flagged as at risk in the pipeline view",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead LEAD-4004 has remained unassigned and without follow-up action for longer than the expected timeframe",
+            "Other leads in the pipeline are within expected timeframes",
+            "User Manager-Sam has the sales manager role"
+          ],
+          "steps": [
+            "Log in as Manager-Sam",
+            "Open the consolidated pipeline view",
+            "Locate LEAD-4004 alongside leads that are within expected timeframes"
+          ],
+          "expected_result": "LEAD-4004 is visibly distinguished (e.g., flagged, highlighted or labeled) from other leads as at risk of stalling, allowing Manager-Sam to identify it at a glance.",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-028",
+          "requirement_ids": [
+            "FR-013"
+          ],
+          "criterion_ids": [
+            "AC-028"
+          ],
+          "scenario": "User without sales manager or sales director role is denied access to the consolidated pipeline view",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "User MarketingUser-Lee has only the marketing team role",
+            "The consolidated pipeline view exists and contains lead data"
+          ],
+          "steps": [
+            "Log in as MarketingUser-Lee",
+            "Attempt to navigate to the consolidated pipeline view"
+          ],
+          "expected_result": "The system denies access to the consolidated pipeline view and MarketingUser-Lee does not see any consolidated lead data.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-029",
+          "requirement_ids": [
+            "FR-013"
+          ],
+          "criterion_ids": [
+            "AC-029"
+          ],
+          "scenario": "Consolidated pipeline view displays an empty state gracefully when no leads have been captured",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "The system contains no captured lead records",
+            "User Manager-Sam has the sales manager role"
+          ],
+          "steps": [
+            "Log in as Manager-Sam",
+            "Open the consolidated pipeline view"
+          ],
+          "expected_result": "The view loads successfully and displays an empty pipeline state (e.g., a 'no leads' message) without any errors or broken UI elements.",
+          "priority": "Low"
+        },
+        {
+          "id": "TC-030",
+          "requirement_ids": [
+            "FR-014"
+          ],
+          "criterion_ids": [
+            "AC-030"
+          ],
+          "scenario": "Sales director generates a lead conversion report broken down by source and by sales representative",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Sales director user account 'director01' exists with reporting access",
+            "Lead LEAD-2001 (source: Website, assigned to rep Jane Doe, outcome: Converted) exists",
+            "Lead LEAD-2002 (source: Trade Show, assigned to rep John Smith, outcome: Lost) exists",
+            "Lead LEAD-2003 (source: Partner Referral, assigned to rep Jane Doe, outcome: Converted) exists"
+          ],
+          "steps": [
+            "Log in as 'director01'",
+            "Navigate to the lead conversion report screen",
+            "Request the conversion report with grouping by source and by sales representative",
+            "Review the displayed figures"
+          ],
+          "expected_result": "The report displays conversion figures grouped by lead source (Website, Trade Show, Partner Referral) and by sales representative (Jane Doe, John Smith) that accurately reflect the underlying lead records, e.g. Jane Doe shows 2 converted leads across Website and Partner Referral sources.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-031",
+          "requirement_ids": [
+            "FR-014"
+          ],
+          "criterion_ids": [
+            "AC-031"
+          ],
+          "scenario": "Sales director requests conversion report for a period with no captured leads",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Sales director user account 'director01' exists with reporting access",
+            "No lead records exist with a capture date in the range 2020-01-01 to 2020-01-31"
+          ],
+          "steps": [
+            "Log in as 'director01'",
+            "Navigate to the lead conversion report screen",
+            "Set the reporting period filter to 2020-01-01 through 2020-01-31",
+            "Generate the report"
+          ],
+          "expected_result": "The system displays the report page with a clear message indicating that no lead data is available for the selected criteria; no error is shown and no fabricated figures are displayed.",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-032",
+          "requirement_ids": [
+            "FR-014"
+          ],
+          "criterion_ids": [
+            "AC-032"
+          ],
+          "scenario": "A user without director or reporting permissions attempts to access the conversion report",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "User account 'rep_jane' exists with sales representative role only (no reporting permission)",
+            "At least one lead record with conversion outcome exists in the system"
+          ],
+          "steps": [
+            "Log in as 'rep_jane'",
+            "Attempt to navigate directly to the lead conversion report URL/screen"
+          ],
+          "expected_result": "The system denies access, displays an access-denied message or equivalent, and does not display any conversion report data or figures.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-033",
+          "requirement_ids": [
+            "FR-014"
+          ],
+          "criterion_ids": [
+            "AC-033"
+          ],
+          "scenario": "Conversion report distinguishes leads still pending assignment or approval from those with a final outcome",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Sales director user account 'director01' exists with reporting access",
+            "Lead LEAD-2004 exists with outcome: Converted",
+            "Lead LEAD-2005 exists with status: Pending Director Approval (no final outcome)",
+            "Lead LEAD-2006 exists with status: Assigned, follow-up in progress (no final outcome)"
+          ],
+          "steps": [
+            "Log in as 'director01'",
+            "Navigate to the lead conversion report screen covering LEAD-2004, LEAD-2005 and LEAD-2006",
+            "Generate the report",
+            "Inspect how each lead is represented"
+          ],
+          "expected_result": "The report clearly labels LEAD-2004 as Converted, and shows LEAD-2005 and LEAD-2006 under a distinct 'In Progress' or 'Unresolved' category rather than counting them as converted or lost.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-034",
+          "requirement_ids": [
+            "FR-015"
+          ],
+          "criterion_ids": [
+            "AC-034"
+          ],
+          "scenario": "A lead captured through a second channel matching an existing contact is flagged as a potential duplicate",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead LEAD-3001 for contact 'Acme Corp / Alice Chen' was captured via the Website contact form 10 minutes ago and assigned to rep Tom Lee"
+          ],
+          "steps": [
+            "Submit a new lead for contact 'Acme Corp / Alice Chen' via Partner Referral channel",
+            "Save the new lead record LEAD-3002"
+          ],
+          "expected_result": "The system flags LEAD-3002 as a potential duplicate of LEAD-3001 and sends an alert to rep Tom Lee (the representative on the existing lead).",
+          "priority": "High"
+        },
+        {
+          "id": "TC-035",
+          "requirement_ids": [
+            "FR-015"
+          ],
+          "criterion_ids": [
+            "AC-035"
+          ],
+          "scenario": "A lead captured once through a single channel with no matching prior record is not flagged as a duplicate",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "No existing lead record matches contact 'Beta Industries / Mark Reyes' by name, email or company"
+          ],
+          "steps": [
+            "Submit a new lead for contact 'Beta Industries / Mark Reyes' via the website contact form",
+            "Save the lead record LEAD-3010"
+          ],
+          "expected_result": "The lead record LEAD-3010 is saved successfully and no duplicate alert is raised or displayed for it.",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-036",
+          "requirement_ids": [
+            "FR-015"
+          ],
+          "criterion_ids": [
+            "AC-036"
+          ],
+          "scenario": "Duplicate is detected for a contact after both matching leads have already been assigned to different representatives",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Lead LEAD-3020 for contact 'Gamma LLC / Priya Nair' was captured via trade show and auto-assigned to rep Nina Ortiz",
+            "Lead LEAD-3021 for the same contact 'Gamma LLC / Priya Nair' was captured via website form shortly after and auto-assigned to rep Carlos Diaz before duplicate detection ran"
+          ],
+          "steps": [
+            "Trigger or wait for the duplicate detection process to evaluate LEAD-3020 and LEAD-3021",
+            "Observe alerts generated for the affected representatives"
+          ],
+          "expected_result": "The system alerts both rep Nina Ortiz and rep Carlos Diaz that a potential duplicate exists between LEAD-3020 and LEAD-3021 so the assignment conflict can be resolved.",
+          "priority": "High"
+        },
+        {
+          "id": "TC-037",
+          "requirement_ids": [
+            "FR-015"
+          ],
+          "criterion_ids": [
+            "AC-037"
+          ],
+          "scenario": "Leads sharing the same company but a different individual contact are flagged as an uncertain potential duplicate for manual review",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Lead LEAD-3030 for 'Delta Systems / Ravi Kumar' was captured via partner referral",
+            "Lead LEAD-3031 for 'Delta Systems / Sara Owens' (same company, different contact person) is captured via the website form shortly after"
+          ],
+          "steps": [
+            "Save the new lead record LEAD-3031",
+            "Allow duplicate evaluation to run against LEAD-3030 and LEAD-3031"
+          ],
+          "expected_result": "The system flags LEAD-3030 and LEAD-3031 as a potential duplicate for the assigned sales representative(s) to review and confirm; the records are not automatically merged or discarded.",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-038",
+          "requirement_ids": [
+            "FR-001"
+          ],
+          "criterion_ids": [],
+          "scenario": "Website contact form submission creates a lead record",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Website contact form is live and connected to the lead management system"
+          ],
+          "steps": [
+            "Navigate to the public website contact form",
+            "Enter valid name, email, phone and company details",
+            "Submit the form"
+          ],
+          "expected_result": "A single lead record is created in the system containing the submitted contact details, with source recorded as 'Website'",
+          "priority": "High"
+        },
+        {
+          "id": "TC-039",
+          "requirement_ids": [
+            "FR-002"
+          ],
+          "criterion_ids": [],
+          "scenario": "Authorized user manually enters a trade show lead",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "User 'Sales Rep Jane' is logged in with authorization to enter leads"
+          ],
+          "steps": [
+            "Open the manual lead entry screen",
+            "Enter contact name, email and company collected at the trade show",
+            "Select source as 'Trade Show'",
+            "Save the record"
+          ],
+          "expected_result": "The lead is saved and appears in the central lead repository with source 'Trade Show'",
+          "priority": "High"
+        },
+        {
+          "id": "TC-040",
+          "requirement_ids": [
+            "FR-003"
+          ],
+          "criterion_ids": [],
+          "scenario": "Partner manager submits a partner referral lead directly",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Partner manager 'Alex Partner' is logged in with partner manager role"
+          ],
+          "steps": [
+            "Open the partner referral submission form",
+            "Enter the referred company's contact details",
+            "Submit the referral"
+          ],
+          "expected_result": "The lead is created in the system with source recorded as 'Partner Referral', without requiring an email exchange",
+          "priority": "High"
+        },
+        {
+          "id": "TC-041",
+          "requirement_ids": [
+            "FR-004"
+          ],
+          "criterion_ids": [],
+          "scenario": "Lead submission missing required contact fields is rejected",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "User is on the manual lead entry or website form"
+          ],
+          "steps": [
+            "Leave the name field blank and omit both email and phone",
+            "Attempt to submit the lead"
+          ],
+          "expected_result": "The system rejects the submission and displays an explanatory error indicating the missing required fields; no lead record is created",
+          "priority": "High"
+        },
+        {
+          "id": "TC-042",
+          "requirement_ids": [
+            "FR-004"
+          ],
+          "criterion_ids": [],
+          "scenario": "Lead submission with minimum required fields is accepted",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "User is on the manual lead entry or website form"
+          ],
+          "steps": [
+            "Enter name and a valid email address only, leaving phone blank",
+            "Submit the lead"
+          ],
+          "expected_result": "The lead record is saved successfully since the minimum required contact fields were provided",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-043",
+          "requirement_ids": [
+            "FR-005"
+          ],
+          "criterion_ids": [],
+          "scenario": "Lead with company size over 500 employees is classified as strategic",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "A lead is being captured for 'MegaCorp Inc' with employee count field set to 800"
+          ],
+          "steps": [
+            "Submit the lead with employee count of 800",
+            "Observe the system's classification of the lead"
+          ],
+          "expected_result": "The lead is classified as 'Strategic' and routed for director review instead of auto-assignment",
+          "priority": "High"
+        },
+        {
+          "id": "TC-044",
+          "requirement_ids": [
+            "FR-005"
+          ],
+          "criterion_ids": [],
+          "scenario": "Lead with exactly 500 employees is classified per boundary rule",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "A lead 'Boundary Co' is captured with employee count field set to exactly 500"
+          ],
+          "steps": [
+            "Submit the lead with employee count of 500",
+            "Observe the system's classification"
+          ],
+          "expected_result": "The lead is classified as 'Standard' since the strategic criterion requires more than 500 employees, and it is routed for auto-assignment",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-045",
+          "requirement_ids": [
+            "FR-006",
+            "NFR-001"
+          ],
+          "criterion_ids": [],
+          "scenario": "Standard lead is auto-assigned to a sales rep within five minutes",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead 'LEAD-2001' is captured with company size of 50 employees (Standard classification)"
+          ],
+          "steps": [
+            "Capture the lead at time T",
+            "Wait and monitor the lead's assignment status",
+            "Check assignment timestamp"
+          ],
+          "expected_result": "The lead is automatically assigned to an available sales representative within 5 minutes of capture (T+5min)",
+          "priority": "High"
+        },
+        {
+          "id": "TC-046",
+          "requirement_ids": [
+            "FR-007"
+          ],
+          "criterion_ids": [],
+          "scenario": "Strategic account lead is routed to the sales director instead of auto-assignment",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead 'LEAD-3001' is captured for 'BigEnterprise Ltd' with 1000 employees (Strategic classification)"
+          ],
+          "steps": [
+            "Capture the strategic lead",
+            "Check the lead's status and assignment queue"
+          ],
+          "expected_result": "The lead is not auto-assigned; instead it appears in the sales director's review queue awaiting approval",
+          "priority": "High"
+        },
+        {
+          "id": "TC-047",
+          "requirement_ids": [
+            "FR-008"
+          ],
+          "criterion_ids": [],
+          "scenario": "Sales director approves a strategic lead and assigns it to a rep",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Strategic lead 'LEAD-3002' is pending in the director's review queue",
+            "Sales director is logged in"
+          ],
+          "steps": [
+            "Open the pending strategic lead 'LEAD-3002'",
+            "Select a sales representative to assign",
+            "Click Approve"
+          ],
+          "expected_result": "The lead's status changes to 'Assigned' and it is associated with the selected sales representative",
+          "priority": "High"
+        },
+        {
+          "id": "TC-048",
+          "requirement_ids": [
+            "FR-009"
+          ],
+          "criterion_ids": [],
+          "scenario": "Strategic lead auto-assigns after 4 business hours without director action",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Strategic lead 'LEAD-3003' was routed to the director's queue 4 business hours and 1 minute ago",
+            "No approval action has been taken by the director"
+          ],
+          "steps": [
+            "Advance system time or wait until the 4-business-hour window has elapsed",
+            "Check the lead's assignment status"
+          ],
+          "expected_result": "The lead is automatically assigned to a sales representative without director approval, since the review window elapsed",
+          "priority": "High"
+        },
+        {
+          "id": "TC-049",
+          "requirement_ids": [
+            "FR-009"
+          ],
+          "criterion_ids": [],
+          "scenario": "Strategic lead remains pending just before the 4-business-hour fallback threshold",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Strategic lead 'LEAD-3004' was routed to the director's queue 3 business hours and 59 minutes ago",
+            "No approval action has been taken"
+          ],
+          "steps": [
+            "Check the lead's assignment status at the 3h59m mark"
+          ],
+          "expected_result": "The lead remains unassigned and pending director review, since the 4-business-hour window has not yet elapsed",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-050",
+          "requirement_ids": [
+            "FR-010"
+          ],
+          "criterion_ids": [],
+          "scenario": "Director approval and 4-hour fallback occur near-simultaneously without duplicate assignment",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Strategic lead 'LEAD-3005' is approaching the 4-business-hour fallback threshold",
+            "Sales director submits an approval action at nearly the same moment the fallback would trigger"
+          ],
+          "steps": [
+            "Trigger the director's approval action at the same moment the 4-hour fallback timer expires",
+            "Check the resulting assignment record for the lead"
+          ],
+          "expected_result": "The lead is assigned exactly once, to whichever action (approval or fallback) completed first; no duplicate or conflicting assignment is recorded",
+          "priority": "High"
+        },
+        {
+          "id": "TC-051",
+          "requirement_ids": [
+            "FR-011"
+          ],
+          "criterion_ids": [],
+          "scenario": "Follow-up reminder is automatically created when a lead is assigned",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead 'LEAD-4001' is about to be assigned to sales rep 'Sam Rep'"
+          ],
+          "steps": [
+            "Trigger assignment of the lead to Sam Rep (via auto-assignment or director approval)",
+            "Check Sam Rep's reminders/task list"
+          ],
+          "expected_result": "A follow-up reminder for the lead is automatically created and visible in the assigned rep's task list",
+          "priority": "High"
+        },
+        {
+          "id": "TC-052",
+          "requirement_ids": [
+            "FR-012"
+          ],
+          "criterion_ids": [],
+          "scenario": "Sales representative is notified when a new lead is assigned",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Lead 'LEAD-4002' is about to be assigned to sales rep 'Sam Rep'"
+          ],
+          "steps": [
+            "Trigger assignment of the lead to Sam Rep",
+            "Check Sam Rep's notifications"
+          ],
+          "expected_result": "Sam Rep receives a notification indicating a new lead has been assigned to them",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-053",
+          "requirement_ids": [
+            "FR-013"
+          ],
+          "criterion_ids": [],
+          "scenario": "Sales manager views a consolidated pipeline of all leads",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Multiple leads exist across Website, Trade Show and Partner Referral sources with varying statuses",
+            "User 'Manager Mia' is logged in with sales manager role"
+          ],
+          "steps": [
+            "Open the pipeline dashboard/view",
+            "Review the list of leads displayed"
+          ],
+          "expected_result": "All leads across all sources are displayed with their current status (e.g., Pending, Assigned, Converted), regardless of source or assigned rep",
+          "priority": "High"
+        },
+        {
+          "id": "TC-054",
+          "requirement_ids": [
+            "FR-014"
+          ],
+          "criterion_ids": [],
+          "scenario": "Generate lead conversion report by source and representative",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Historical lead data exists with a mix of converted and unconverted leads across sources and reps"
+          ],
+          "steps": [
+            "Navigate to the reporting module",
+            "Generate a conversion report filtered by source and by sales representative"
+          ],
+          "expected_result": "The report displays accurate conversion rates broken down by lead source and by sales representative",
+          "priority": "High"
+        },
+        {
+          "id": "TC-055",
+          "requirement_ids": [
+            "FR-015"
+          ],
+          "criterion_ids": [],
+          "scenario": "System flags a potential duplicate lead captured through two channels",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "A lead for 'Jane Doe, jane@acme.com' was captured via the website form 10 minutes ago",
+            "The same contact 'Jane Doe, jane@acme.com' is now submitted again via the trade show manual entry"
+          ],
+          "steps": [
+            "Submit the trade show entry for Jane Doe at Acme",
+            "Check the new lead record's status/flags"
+          ],
+          "expected_result": "The system flags the new lead as a potential duplicate of the existing website lead",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-056",
+          "requirement_ids": [
+            "FR-015"
+          ],
+          "criterion_ids": [],
+          "scenario": "Leads from genuinely different contacts/companies are not flagged as duplicates",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "A lead for 'John Smith, john@beta.com' exists in the system"
+          ],
+          "steps": [
+            "Submit a new lead for 'Mary Jones, mary@gamma.com' via a different channel",
+            "Check the new lead record's status/flags"
+          ],
+          "expected_result": "The new lead is not flagged as a duplicate, since the contact and company do not match any existing record",
+          "priority": "Low"
+        },
+        {
+          "id": "TC-057",
+          "requirement_ids": [
+            "NFR-002"
+          ],
+          "criterion_ids": [],
+          "scenario": "All leads submitted concurrently across multiple channels are captured without loss",
+          "scenario_type": "Edge Case",
+          "preconditions": [
+            "Test environment configured to accept simultaneous submissions from website form, manual entry and partner referral"
+          ],
+          "steps": [
+            "Submit a batch of leads simultaneously through all three channels",
+            "Compare the number of submitted leads to the number of records created in the system"
+          ],
+          "expected_result": "Every submitted lead results in exactly one corresponding record in the system; no leads are lost or dropped",
+          "priority": "High"
+        },
+        {
+          "id": "TC-058",
+          "requirement_ids": [
+            "NFR-003"
+          ],
+          "criterion_ids": [],
+          "scenario": "Sales representative is denied access to the director's approval function",
+          "scenario_type": "Negative",
+          "preconditions": [
+            "User 'Sales Rep Jane' is logged in with sales representative role",
+            "Strategic lead 'LEAD-3006' is pending director review"
+          ],
+          "steps": [
+            "Attempt to navigate to the strategic lead approval screen as Jane",
+            "Attempt to approve the pending lead"
+          ],
+          "expected_result": "Access is denied and the approval action is blocked, since sales representatives do not have director-level permissions",
+          "priority": "High"
+        },
+        {
+          "id": "TC-059",
+          "requirement_ids": [
+            "NFR-003"
+          ],
+          "criterion_ids": [],
+          "scenario": "Sales director can access approval functions while marketing role cannot view assignment controls",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Sales director 'Director Dana' and marketing user 'Marketing Mo' are both logged in with their respective roles"
+          ],
+          "steps": [
+            "As Dana, navigate to the strategic lead review queue and confirm access",
+            "As Mo, attempt to navigate to the same review/approval queue"
+          ],
+          "expected_result": "Dana can access and act on the director review queue; Mo is denied access to approval/assignment controls consistent with the marketing role's permissions",
+          "priority": "High"
+        },
+        {
+          "id": "TC-060",
+          "requirement_ids": [
+            "NFR-004"
+          ],
+          "criterion_ids": [],
+          "scenario": "Lead contact data fields are stored and displayed with restricted, controlled access",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "A lead record containing name, email and phone number exists in the system",
+            "Data handling requirements have been confirmed with compliance stakeholders (per applicable policy, unconfirmed details treated as open item)"
+          ],
+          "steps": [
+            "Access the lead record as an authorized user",
+            "Verify how contact fields are displayed and whether access is logged or restricted"
+          ],
+          "expected_result": "Contact data is only accessible to authorized roles and is handled consistently with the data protection approach confirmed with stakeholders; unauthorized users cannot view the raw contact fields",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-061",
+          "requirement_ids": [
+            "NFR-005"
+          ],
+          "criterion_ids": [],
+          "scenario": "Trade show lead entry can be completed in a minimal number of steps",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "User 'Sales Rep Jane' is logged in on a mobile or tablet device at a simulated trade show floor"
+          ],
+          "steps": [
+            "Open the manual lead entry screen",
+            "Enter the minimum required contact fields",
+            "Save the lead",
+            "Count the number of screens/taps required to complete the entry"
+          ],
+          "expected_result": "The lead is saved successfully using a minimal number of steps/screens suitable for quick entry in a time-constrained setting",
+          "priority": "Medium"
+        },
+        {
+          "id": "TC-062",
+          "requirement_ids": [
+            "NFR-006"
+          ],
+          "criterion_ids": [],
+          "scenario": "System remains available and functional throughout normal business hours",
+          "scenario_type": "Positive",
+          "preconditions": [
+            "Test period spans the defined normal business hours"
+          ],
+          "steps": [
+            "Monitor system uptime and attempt lead capture, assignment and director review actions at multiple points during business hours"
+          ],
+          "expected_result": "The system remains available with no unplanned interruption during business hours, and lead capture, auto-assignment and director review all function without disruption",
+          "priority": "High"
+        }
+      ]
+    }
+  }
+}

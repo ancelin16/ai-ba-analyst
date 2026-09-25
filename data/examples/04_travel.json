@@ -1,0 +1,13 @@
+{
+  "title": "Travel booking management",
+  "summary": "Policy compliance and spend visibility",
+  "input": {
+    "project_name": "Corporate Travel Booking",
+    "request": "Employees book business travel by emailing our travel agency, and managers approve trips informally. Finance only sees travel costs when the invoices arrive a month later, many bookings break the travel policy (for example business-class flights on short routes), and we can't easily locate employees who are travelling if something goes wrong. We want a travel request and booking process with approval, policy checks before booking, and reporting on travel spend.",
+    "industry": "Manufacturing",
+    "stakeholders": "Travelling employees, line managers, finance, travel agency, HR / duty of care",
+    "existing_systems": "Travel agency booking by email, ERP finance system, expense reporting tool",
+    "constraints": "The contract with the current travel agency runs for another 18 months."
+  },
+  "analysis": null
+}

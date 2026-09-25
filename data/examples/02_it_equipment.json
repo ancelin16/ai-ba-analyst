@@ -1,0 +1,13 @@
+{
+  "title": "Employee IT equipment requests",
+  "summary": "Internal approval workflow replacing email",
+  "input": {
+    "project_name": "IT Equipment Request Portal",
+    "request": "New employees often wait one to two weeks for a laptop and accessories on their first day. Today, hiring managers email the IT service desk, IT forwards the request to the manager's director for approval, and approvals are given by replying to the email. Requests get lost in inboxes, nobody can see where a request is, and IT staff re-key everything into the asset spreadsheet. We want a self-service portal where managers can request standard equipment, approvals are routed automatically, and everyone can see the request status.",
+    "industry": "Professional services (about 1,200 employees)",
+    "stakeholders": "Hiring managers, directors (approvers), IT service desk, HR onboarding team, new employees",
+    "existing_systems": "Shared IT service desk mailbox, Excel asset register, HR system that holds start dates",
+    "constraints": "Must use the company's existing single sign-on. Standard equipment catalogue is owned by IT."
+  },
+  "analysis": null
+}

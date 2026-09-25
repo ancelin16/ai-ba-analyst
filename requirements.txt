@@ -1,0 +1,8 @@
+streamlit>=1.64
+anthropic>=1.8
+pydantic>=2.13
+pandas>=3.0
+python-docx>=1.2
+python-dotenv>=1.2
+graphviz>=0.21
+pytest>=9.1

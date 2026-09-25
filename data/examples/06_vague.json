@@ -1,0 +1,186 @@
+{
+  "title": "Vague request (gate demo)",
+  "summary": "Shows how the analyst handles missing information",
+  "input": {
+    "project_name": "Team System Improvement",
+    "request": "We need a better system for our team. The current way of doing things is not working well and people are frustrated.",
+    "industry": "",
+    "stakeholders": "",
+    "existing_systems": "",
+    "constraints": ""
+  },
+  "analysis": {
+    "input": {
+      "project_name": "Team System Improvement",
+      "request": "We need a better system for our team. The current way of doing things is not working well and people are frustrated.",
+      "industry": "",
+      "stakeholders": "",
+      "existing_systems": "",
+      "constraints": "",
+      "clarifications": []
+    },
+    "created_at": "2026-09-24T20:23:50.561389Z",
+    "model": "claude-sonnet-5",
+    "is_demo": false,
+    "questions": {
+      "questions": [
+        {
+          "id": "Q-01",
+          "question": "What specific business problem or process is failing, and what does 'not working well' mean in concrete terms (e.g., too slow, too many errors, lacking a feature)?",
+          "category": "Critical",
+          "area": "Scope",
+          "rationale": "Without a defined problem statement, requirements cannot be derived; 'a better system' is not actionable."
+        },
+        {
+          "id": "Q-02",
+          "question": "Who are the members of 'our team' and what is the team's function or department?",
+          "category": "Critical",
+          "area": "Users",
+          "rationale": "The user base and their roles must be known to define functional requirements and access needs."
+        },
+        {
+          "id": "Q-03",
+          "question": "What is the current system or process being used today (name, tool, or manual method)?",
+          "category": "Critical",
+          "area": "Data",
+          "rationale": "Without knowing the existing system, it's impossible to assess what data, integrations, or migration needs exist."
+        },
+        {
+          "id": "Q-04",
+          "question": "Who else, beyond the immediate team, is affected by or interacts with this process (e.g., managers, other departments, external parties)?",
+          "category": "Critical",
+          "area": "Users",
+          "rationale": "Unidentified stakeholders could be impacted by changes or need to approve the solution, risking incomplete requirements."
+        },
+        {
+          "id": "Q-05",
+          "question": "What specifically is causing frustration for people using the current system or process?",
+          "category": "Critical",
+          "area": "Business Rules",
+          "rationale": "Frustration could stem from many different root causes (usability, speed, errors, missing features); the fix depends entirely on the cause."
+        },
+        {
+          "id": "Q-06",
+          "question": "Is this request for a new system, a replacement of an existing tool, or an enhancement/process change to the current way of working?",
+          "category": "Critical",
+          "area": "Scope",
+          "rationale": "This determines whether the project is a build, buy, migrate, or process redesign effort, which drastically changes scope and approach."
+        },
+        {
+          "id": "Q-07",
+          "question": "Who has the authority to approve requirements and sign off on the final solution?",
+          "category": "Critical",
+          "area": "Users",
+          "rationale": "Without a defined approver, requirements cannot be validated or finalized."
+        },
+        {
+          "id": "Q-08",
+          "question": "What data does the team currently work with, where is it stored, and does it include any personal or sensitive information?",
+          "category": "Critical",
+          "area": "Data",
+          "rationale": "Data location and sensitivity affect architecture, security, and compliance requirements; without this, those areas cannot be scoped."
+        },
+        {
+          "id": "Q-09",
+          "question": "Are there any existing systems or tools that the new solution would need to integrate with?",
+          "category": "Important",
+          "area": "Integration",
+          "rationale": "Unidentified integration needs could be discovered late, causing rework."
+        },
+        {
+          "id": "Q-10",
+          "question": "What industry or regulatory context does the team operate in, and are there compliance or data retention obligations to consider?",
+          "category": "Important",
+          "area": "Compliance",
+          "rationale": "Industry was not provided; without it, applicable regulations cannot be identified, risking a non-compliant solution."
+        },
+        {
+          "id": "Q-11",
+          "question": "How will the business measure whether the new system has successfully solved the problem?",
+          "category": "Important",
+          "area": "Success Metrics",
+          "rationale": "Without success criteria, it will be impossible to validate the project's outcome or know when it is complete."
+        },
+        {
+          "id": "Q-12",
+          "question": "Are there any known constraints on budget, timeline, technology platform, or staffing that will limit the solution?",
+          "category": "Important",
+          "area": "Constraints",
+          "rationale": "Constraints shape feasible options; none were provided, so assumptions may lead to an unworkable design."
+        },
+        {
+          "id": "Q-13",
+          "question": "Who should have access to the system, and are there different permission levels needed for different roles?",
+          "category": "Important",
+          "area": "Security",
+          "rationale": "Access control design depends on knowing user roles and sensitivity of functions/data."
+        },
+        {
+          "id": "Q-14",
+          "question": "What is the expected volume of use (number of users, transactions, or records) the system needs to support?",
+          "category": "Nice to Know",
+          "area": "Constraints",
+          "rationale": ""
+        },
+        {
+          "id": "Q-15",
+          "question": "Is there a preferred timeline or urgency driving this request, such as a specific deadline or event?",
+          "category": "Nice to Know",
+          "area": "Constraints",
+          "rationale": ""
+        }
+      ]
+    },
+    "problem": {
+      "problem_statement": "A team is experiencing frustration with its current way of working, but the specific process, system, or pain points causing this frustration are not identified in the request.",
+      "objectives": [
+        {
+          "id": "BO-01",
+          "description": "Reduce team frustration by improving the current way of doing things.",
+          "success_measure": "",
+          "basis": "Stated"
+        },
+        {
+          "id": "BO-02",
+          "description": "Replace or improve an unspecified process or system to make the team's work more effective.",
+          "success_measure": "",
+          "basis": "Assumed"
+        }
+      ],
+      "target_users": [
+        "Members of the team referenced in the request (specific roles unknown)"
+      ],
+      "current_state": "An unspecified 'current way of doing things' exists that is causing frustration among team members.",
+      "future_state": "An improved system or process that reduces frustration, though the desired characteristics of this future state are not specified.",
+      "in_scope": [],
+      "out_of_scope": [],
+      "ambiguities": [
+        "'Better system' is undefined \u2014 unclear whether this refers to a software system, a business process, a team structure, or something else.",
+        "'The current way of doing things' is not described, so the specific pain points are unknown.",
+        "'People are frustrated' does not specify who is frustrated, why, or how frustration manifests (e.g., delays, errors, communication issues).",
+        "No indication of which team (department, function, size) is affected.",
+        "No indication of whether a technical solution, process change, or organizational change is expected."
+      ],
+      "conflicts": [],
+      "is_too_vague": true,
+      "missing_information": [
+        "What industry or business domain the team operates in",
+        "Who the stakeholders and end users are (roles, departments)",
+        "What the current process or system consists of, and what specific tasks it supports",
+        "What specific problems or symptoms are causing frustration (e.g., delays, errors, manual work, lack of visibility)",
+        "Whether 'system' refers to software, a business process, an organizational structure, or a combination",
+        "Any existing tools, systems, or platforms currently in use",
+        "Any constraints such as budget, timeline, compliance requirements, or technical limitations",
+        "What success would look like if the problem were solved"
+      ]
+    },
+    "stakeholders": null,
+    "process": null,
+    "risks": null,
+    "requirements": null,
+    "stories": null,
+    "use_cases": null,
+    "criteria": null,
+    "test_cases": null
+  }
+}

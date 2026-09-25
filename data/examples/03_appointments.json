@@ -1,0 +1,13 @@
+{
+  "title": "Customer appointment scheduling",
+  "summary": "Online booking for a multi-location clinic",
+  "input": {
+    "project_name": "Online Appointment Booking",
+    "request": "Our dental clinics take all appointments by phone. Receptionists spend most of the morning on calls, patients complain they can't get through, and missed appointments are a growing problem because reminders are only sent when staff have time to call. We would like patients to book, reschedule and cancel appointments online and receive automatic reminders.",
+    "industry": "Healthcare (dental clinics, 4 locations)",
+    "stakeholders": "Patients, receptionists, dentists and hygienists, practice managers",
+    "existing_systems": "Practice management system used for patient records and the appointment diary",
+    "constraints": "Patient information is confidential health data."
+  },
+  "analysis": null
+}

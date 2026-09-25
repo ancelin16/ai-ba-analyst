@@ -1,0 +1,12 @@
+.env
+.venv
+__pycache__/
+*.pyc
+.pytest_cache/
+data/*.db
+.DS_Store
+exports/
+data/samples/
+.claude/
+# iCloud sync-conflict copies
+* [0-9].*
